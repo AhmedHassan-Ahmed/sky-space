@@ -1,211 +1,178 @@
-# FieldShift — Core Logic (No UI)
+# Sky Space (FieldShift) 🌍🛰️🌾
 
-All engine, data, and API layers. No React, no CSS, no components.
-Connect your own frontend to these modules.
+**Sky Space** is an Earth Observation (EO) powered agro-ecological decision support platform designed for Egyptian agriculture and arid/semi-arid regions. Developed for the **NASA Space Apps Challenge**, Sky Space harmonizes multi-sensor NASA satellite observations (POWER, MODIS, SMAP) and ISRIC SoilGrids with agronomic logic to guide farmers and agricultural advisors in climate-adaptive crop rotations, water conservation, and soil health management.
 
 ---
 
-## Folder Structure
+## 🌟 Key Features
+
+- **🌐 Interactive 3D Globe & 2D Parcel Mapping**:
+  - Global 3D view with realistic NASA GIBS overlays (`react-globe.gl` / Three.js).
+  - High-resolution 2D parcel boundary drawing and area calculation in Feddans, Hectares, and Acres (`react-leaflet` / Turf.js).
+  - NASA GIBS dynamic satellite layers: MODIS NDVI (Canopy Health), SMAP Root-Zone Soil Moisture, and High-Resolution True Color Surface Reflectance.
+- **🌱 5-Element Agro-Ecological Rotation Planner**:
+  - Evaluation of consecutive cropping cycles across Egyptian agricultural seasons:
+    - **العروة الشتوية (Shitwi)**: Nov 1 – Apr 30 (Wheat, Egyptian Berseem Clover, Sugar Beet).
+    - **العروة الصيفية (Seifi)**: May 1 – Sep 30 (Maize, Sorghum, Soybean, Sesame).
+    - **العروة النيلية (Nili)**: Short-duration transition crops (Cowpea, Fahl Berseem).
+  - 5-Element Strategy Evaluation:
+    1. **Why Suggested**: Agronomic justification based on prior crops and objectives.
+    2. **Supporting Evidence**: Satellite-derived indices (heat stress days, canopy anomalies, soil moisture).
+    3. **Expected Benefits**: Quantified water savings ($m^3/\text{feddan}$) and nitrogen fixing.
+    4. **Information Gaps**: Transparent disclosure of what satellites cannot observe (subsurface salinity $EC_e$, pests, farmgate spot prices).
+    5. **Local Risks & Advisory Notice**: Practical review checkpoints for local canal turns and variety maturation.
+- **🌐 Full Bilingual Support (Arabic & English with RTL)**:
+  - Seamless toggle between pure Arabic and pure English across all interfaces, forms, tutorials, and results.
+  - Native Right-to-Left (`dir="rtl"`) text and layout alignment for Arabic speakers.
+- **📱 Mobile App & Android APK**:
+  - Cross-platform Android support via **Capacitor 8**.
+  - Automated CI/CD pipeline using GitHub Actions to compile and export debug APKs.
+- **☁️ Cloud Deployment Ready**:
+  - Production deployment on **Vercel** with serverless backend API routing (`/api`).
+  - Persistent storage with **MongoDB Atlas** and graceful in-memory fallback for offline/demo scenarios.
+
+---
+
+## 🏗️ Architecture & Technology Stack
 
 ```
-src/
-├── engine/
-│   ├── fieldIndices.js       ← Main pipeline: takes inputs+apiData → diagnostics object
-│   ├── rotationEngine.js     ← Takes diagnostics → ranked rotation strategies
-│   ├── cropEvidence.js       ← Crop heat/water/salinity tolerance lookup
-│   ├── referenceEt.js        ← FAO-56 ET₀ calculation helpers
-│   └── strategyExplanations.js ← Human-readable labels for each strategy
+sky-space/
+├── frontend/                     # Next.js 16 Web & Mobile App (React 19, Tailwind CSS v4)
+│   ├── src/
+│   │   ├── app/                  # Next.js App Router
+│   │   ├── components/           # AgriDashboard, FarmMap, Globe3D, FarmPlannerModal, etc.
+│   │   ├── lib/                  # LanguageContext (i18n), NASA GIBS/POWER client, Geo helpers
+│   │   └── types/                # TypeScript interfaces for farm data and engine contracts
+│   ├── android/                  # Capacitor Android native project (compileSdk 36, Java 21)
+│   ├── capacitor.config.ts       # Capacitor native wrapper configuration
+│   └── package.json              # Capacitor 8 + Next.js 16 + React 19 dependencies
 │
-├── services/
-│   └── nasaDataService.js    ← Fetches NASA POWER, MODIS NDVI, SoilGrids APIs
+├── backend/                      # Node.js + Express REST API
+│   ├── models/                   # User and FarmerData Mongoose schemas + Fallback store
+│   ├── routes/                   # /api/auth and /api/farm endpoints
+│   ├── server.js                 # Standalone local Express server (Port 5000)
+│   └── package.json
 │
-├── presentation/
-│   └── farmerModel.js        ← Post-processes strategies into display-ready objects
+├── api/                          # Vercel Serverless Function Handler
+│   └── index.ts                  # Serverless entry point connecting MongoDB and Express
 │
-├── data/
-│   ├── egyptCrops.json       ← Crop catalog (names, seasons, water needs)
-│   ├── cropEvidence.json     ← Per-crop satellite evidence thresholds
-│   ├── demoPresets.json      ← Preset field locations (Giza, Fayoum, etc.)
-│   ├── ndviHistory.json      ← 2020–2024 historical NDVI by location
-│   ├── observedBenchmarks.json ← Observed ET₀ / climate benchmarks
-│   ├── referenceEtDrivers.json ← Monthly ET₀ driver values
-│   └── syntheticFixtures.json  ← Test/fallback data when APIs fail
+├── src/                          # Core Agro-Ecological Engine
+│   ├── engine/                   # fieldIndices.js, rotationEngine.js, referenceEt.js
+│   ├── data/                     # Egypt crop catalogs, NDVI historical benchmarks, fixtures
+│   └── services/                 # NASA POWER, MODIS, SoilGrids fetching services
 │
-└── i18n.js                   ← Simple EN/AR text helper: text(lang, "en", "ar")
+└── .github/workflows/
+    └── build-apk.yml             # GitHub Actions CI/CD workflow for automated Android APK builds
 ```
 
 ---
 
-## How to Use
+## 🚀 Getting Started
 
-### 1. Fetch data from APIs
-```js
-import { fetchFieldData } from './src/services/nasaDataService.js'
+### Prerequisites
 
-const data = await fetchFieldData({ lat: 29.9, lon: 31.2 })
-// returns: { climate, ndvi, soil, sources }
+- **Node.js**: v22.0.0 or higher (required by Capacitor 8)
+- **Java JDK**: 21 (for Android APK compilation)
+- **MongoDB**: Local MongoDB instance or MongoDB Atlas URI (optional for offline testing; fallback memory store activates automatically)
+
+---
+
+### 1. Local Development
+
+#### Start Backend (Express API)
+```bash
+cd backend
+npm install
+npm run dev
+# Server runs on http://localhost:5000
 ```
 
-### 2. Compute diagnostics
-```js
-import { computeFieldIndices } from './src/engine/fieldIndices.js'
-
-const inputs = {
-  lat: 29.9,
-  lon: 31.2,
-  salinityLevel: 'moderate',   // 'low' | 'moderate' | 'high'
-  soilTexture: 'clay_loam',
-  feddans: 5,
-  seasonStartDate: '2025-10-01'  // optional
-}
-
-const diagnostics = computeFieldIndices(inputs, data)
-// returns: { heatStressDays, bareSoilDays, canopyAnomaly, salinityRisk, ... }
-```
-
-### 3. Get rotation strategies
-```js
-import { rankRotations } from './src/engine/rotationEngine.js'
-
-const evaluation = rankRotations(inputs, diagnostics, data)
-// returns: { strategies: [...], diagnostics }
-// each strategy: { id, score, crops: [...], waterM3PerFeddan, ... }
-```
-
-### 4. Format for display
-```js
-import { buildFarmerModel } from './src/presentation/farmerModel.js'
-
-const model = buildFarmerModel(evaluation, inputs, data, lang)
-// returns display-ready objects with labels, colors, translated text
+#### Start Frontend (Next.js)
+```bash
+cd frontend
+npm install
+npm run dev
+# Open http://localhost:3000 in your browser
 ```
 
 ---
 
-## Diagnostics Object (key fields)
+### 2. Environment Variables
 
-| Field | Description |
-|-------|-------------|
-| `heatStressDays` | Days with Tmax > 38°C (May–Sep) from NASA POWER |
-| `bareSoilDays` | Longest autumn NDVI < 0.22 window (bare soil gap) |
-| `canopyAnomaly` | Z-score of 2025 peak NDVI vs 2020–2024 baseline |
-| `salinityRisk` | 0–100 index (soil + water source) |
-| `autumnObservedDays` | MODIS observations available in autumn |
-| `rootZoneWetnessAvg` | NASA POWER GWETROOT average |
-| `nitrogen` | Derived from SoilGrids SOC |
-| `soilOrganicCarbon` | SoilGrids SOC (g/kg) |
-
----
-
-## Data Sources
-
-| Source | Resolution | What it provides |
-|--------|-----------|-----------------|
-| NASA POWER | ~50 km daily | Tmax, ET₀, precipitation, solar radiation, humidity |
-| MODIS MOD13Q1 / Landsat 8-9 | 250 m / 30 m (16-day) | NDVI greenness time series, bare-soil gaps, canopy anomaly |
-| NASA SMAP (L4) | 9 km – 36 km (2–3 day) | Root-zone (0–100 cm) and surface soil moisture saturation |
-| ISRIC SoilGrids 2.0 | 250 m static grid | pH, clay %, sand %, SOC, soil nitrogen |
-
----
-
-## NASA Space Apps Challenge — Data Harmonization & Multi-Sensor Fusion
-
-In accordance with the **NASA Space Apps Challenge: Modeling, SI, and Data Fusion** guidelines, Sky Space (FieldShift) bridges heterogeneous Earth Observation (EO) streams into a unified agro-ecological decision engine:
-
-```mermaid
-graph TD
-  POWER["NASA POWER<br/>(0.5° × 0.5° / ~50km, Daily)"] -->|Macro-climate & Heatwaves| FUSION["Multi-Sensor Harmonization Engine"]
-  MODIS["MODIS / Landsat 8-9<br/>(10m–250m, 16-Day Composite)"] -->|NDVI & Bare-Soil Runs| FUSION
-  SMAP["NASA SMAP L4<br/>(9–36km, 2-3 Day Revisit)"] -->|Root-Zone Moisture Anomaly| FUSION
-  SOIL["ISRIC SoilGrids<br/>(250m, Depth 0–30cm)"] -->|Clay %, Sand %, pH| FUSION
-
-  FUSION --> SEASONS["Egyptian Agro-Ecological Windows<br/>1. Shitwi (Winter, 181d)<br/>2. Seifi (Summer, 153d)<br/>3. Nili (Autumn, 91d)"]
-  SEASONS --> ENGINE["Crop Rotation & Advisory Engine"]
-  ENGINE --> FIVE["5-Element Strategy Explanation<br/>1. Why Suggested<br/>2. Supporting Evidence<br/>3. Expected Benefits<br/>4. Information Gaps<br/>5. Local Risks & Advisory Notice"]
+#### Backend (`backend/.env`):
+```env
+PORT=5000
+MONGO_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/skyspace?retryWrites=true&w=majority
+JWT_SECRET=your_jwt_secret_key_here
 ```
 
-### 1. Spatial Harmonization & Downscaling
-- **Macro-scale Drivers (~50 km)**: Temperature ($T_{\max}, T_{\min}$) and solar radiation from NASA POWER provide regional atmospheric energy demand.
-- **Micro-scale Parcel Boundaries (10 m – 30 m)**: Farm polygons drawn on the interactive map capture exact field coordinates. Bilinear interpolation samples macro-weather at the parcel centroid, while MODIS/Landsat composites evaluate the local vegetative canopy (NDVI), masking desert-fringe non-agricultural pixels.
-
-### 2. Temporal Harmonization across Egyptian Agricultural Seasons
-Daily continuous satellite observations are harmonized into Egyptian crop windows:
-- **العروة الشتوية (Shitwi)**: Nov 1 – Apr 30 (181 days) — Wheat, Egyptian Berseem Clover, Sugar Beet.
-- **العروة الصيفية (Seifi)**: May 1 – Sep 30 (153 days) — Maize, Rice, Cotton, Sorghum, Soybeans.
-- **العروة النيلية (Nili / Autumn Gap)**: Sep 1 – Nov 30 (91 days) — Short-duration transition crops (Cowpea, Fahl Berseem, Nili Corn).
-
-### 3. Satellite Observations vs. Ground-Truth (In-Situ Reality)
-- **What Satellites Provide**: Synoptic coverage, multi-year historical anomaly tracking, regional heat stress counts (>38°C), and bare-soil exposure windows.
-- **What Satellites Cannot See (Ground-Truth Requirement)**:
-  - Subsurface root-zone soil salinity ($EC_e$ in dS/m) at 30–90 cm depth.
-  - Hyper-local nematode or fungal root-rot pathogens.
-  - Daily farmgate crop market prices in specific local markaz/governorate markets.
-  - Micro-topographical ditch siltation or tail-end canal turn rotation delays.
-- **Advisory Mandate**: Sky Space is a **decision-support tool** to empower farmers and extension officers, never a substitute for hands-on agronomic expertise or laboratory soil analyses.
-
----
-
----
-
-## Notes for Frontend Dev
-
-- `i18n.js` exports `text(lang, enStr, arStr)` — use lang = `"en"` or `"ar"`
-- All money/area in **feddans** (1 feddan = 4200 m²)
-- Water volumes in **m³/feddan/season**
-- APIs can fail (SoilGrids timeout is common) — `syntheticFixtures.json` is the fallback
-- `demoPresets.json` has 4 preset field locations with pre-filled inputs
-
----
-
-## Full-Stack Architecture (Next.js + Node Express + MongoDB)
-
-FieldShift now includes a full-stack implementation with authentication and MongoDB persistence:
-
+#### Frontend (`frontend/.env.local`):
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5000/api
 ```
-FieldShift-core/
-├── backend/                  ← Node.js + Express API
-│   ├── models/
-│   │   ├── User.js           ← User model (Name, Email, Hashed Password)
-│   │   └── FarmerData.js     ← Farmer data model (Location, Area, Last Crop, etc.)
-│   ├── middleware/auth.js    ← JWT authentication middleware
-│   ├── routes/
-│   │   ├── auth.js           ← Register & Login (/api/auth)
-│   │   └── farm.js           ← Save farmer data & run engine (/api/farm)
-│   ├── server.js             ← Express server entry point (Port 5000)
-│   └── .env                  ← MongoDB URI & JWT secret
-│
-├── frontend/                 ← Next.js Web Application
-│   ├── pages/
-│   │   ├── index.js          ← Main Dashboard (Farmer Inputs & Rotation Engine)
-│   │   ├── login.js          ← Sign In Page
-│   │   └── register.js       ← Account Registration Page
-│   ├── lib/api.js            ← Client API helper (Attaches JWT token from localStorage)
-│   └── styles/globals.css    ← Modern agricultural theme
-│
-├── src/                      ← Core engine, NASA data services, and catalogs
-└── index.html                ← Standalone zero-dependency single-file fallback
+*(When building for Capacitor APK or production, set `NEXT_PUBLIC_API_URL=https://sky-space-omega.vercel.app/api`)*
+
+---
+
+### 3. Deploying on Vercel
+
+The project is structured to deploy both frontend and backend seamlessly on Vercel:
+
+1. **Root Directory**: Deploy the repository root.
+2. **API Handler**: [api/index.ts](file:///home/ahmed/Music/sky-space-v4/sky-space-uploaded/sky-space-main/api/index.ts) routes all `/api/*` traffic to Express with automatic MongoDB caching.
+3. **Environment Variables on Vercel**:
+   - `MONGO_URI`: Your MongoDB Atlas connection string.
+   - `JWT_SECRET`: Secret key for JWT authentication.
+
+---
+
+### 4. Building the Android APK (Capacitor 8)
+
+#### Automated CI/CD Build (GitHub Actions)
+Every push to `main` or `dev` (or manual trigger under the GitHub **Actions** tab) automatically triggers [.github/workflows/build-apk.yml](file:///home/ahmed/Music/sky-space-v4/sky-space-uploaded/sky-space-main/.github/workflows/build-apk.yml):
+1. Sets up **Node.js 22** and **Java JDK 21**.
+2. Runs `npm run build:cap` (static HTML export targeted to production API).
+3. Executes `npx cap sync android`.
+4. Runs `./gradlew assembleDebug` and produces `SkySpace-debug-apk` available for download directly from the Actions artifact tab.
+
+#### Local Android Build
+```bash
+cd frontend
+
+# 1. Build Next.js static assets for mobile
+npm run build:cap
+
+# 2. Sync web assets with Capacitor Android
+npx cap sync android
+
+# 3. Open in Android Studio or compile with Gradle
+cd android
+./gradlew assembleDebug
+
+# Output APK: frontend/android/app/build/outputs/apk/debug/app-debug.apk
 ```
 
-### Running the Full-Stack App
+---
 
-1. **Start Backend (Express + Mongoose on Port 5000)**:
-   ```bash
-   cd backend
-   npm start
-   ```
+## 🛰️ NASA Earth Observation Datasets Harmonization
 
-2. **Start Frontend (Next.js on Port 3000)**:
-   ```bash
-   cd frontend
-   npm run dev
-   ```
+In accordance with the **NASA Space Apps Challenge** criteria, Sky Space harmonizes heterogeneous remote sensing streams into actionable recommendations:
 
-3. Open **`http://localhost:3000`** in your browser:
-   - Register a new farmer account or sign in.
-   - The frontend automatically stores the JWT token in `localStorage`.
-   - Submit your field parameters (Land Location, Land Area, Last Crop, Planting Date, Irrigation Method, Water Availability, Plan Objective).
-   - The backend validates the token, runs the core FieldShift rotation engine, saves the record to MongoDB, and returns the diagnostics and recommended strategies.
+| Remote Sensing Product | Spatial / Temporal Resolution | Agro-Ecological Purpose |
+|------------------------|-------------------------------|-------------------------|
+| **NASA POWER** | ~50 km grid / Daily | Macro-climate thermal energy, $T_{\max}$, solar radiation, daily reference $ET_0$ calculation. |
+| **MODIS (MOD13Q1) / Landsat** | 250 m / 30 m (16-day) | Vegetation health (NDVI), vegetative canopy anomaly, bare-soil exposure duration. |
+| **NASA SMAP (Level 4)** | 9 km – 36 km (2–3 day) | Root-zone (0–100 cm) soil moisture saturation anomaly. |
+| **ISRIC SoilGrids 2.0** | 250 m static grid | Soil organic carbon (SOC), clay %, sand %, and derived nitrogen buffer. |
 
+---
 
-# sky-space
-# sky-space
+## 📜 Scientific Methodology & Transparency
+
+- **Decision Support, Not Replacement**: Sky Space serves as an agronomic decision accelerator for smallholder farmers and extension officers.
+- **Transparent Limitation Disclosures**: Because orbital optical and radiometer sensors cannot detect root-zone salinity ($EC_e$), subterranean soil pathogen burdens, or micro-topographical watercourse siltation, every strategy card explicitly notes information gaps that require local ground review.
+
+---
+
+## 📄 License
+This project is licensed under the MIT License.
