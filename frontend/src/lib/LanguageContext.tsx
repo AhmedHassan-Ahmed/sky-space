@@ -97,7 +97,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       document.documentElement.lang = l;
       document.documentElement.dir = l === "ar" ? "rtl" : "ltr";
     }
-    try { localStorage.setItem("skyspace_lang", l); } catch {}
+    if (typeof window !== "undefined") {
+      try { localStorage.setItem("skyspace_lang", l); } catch {}
+    }
   }, []);
 
   useEffect(() => {
