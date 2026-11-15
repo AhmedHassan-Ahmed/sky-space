@@ -1,0 +1,1672 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FieldShift — Crop Rotation & Field Diagnostics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b120e;
+      --surface: #131f17;
+      --surface-card: #1a2a1f;
+      --surface-subtle: #23372a;
+      --border: #294232;
+      --border-accent: #375b43;
+      --primary: #22c55e;
+      --primary-hover: #16a34a;
+      --primary-glow: rgba(34, 197, 94, 0.2);
+      --accent-water: #38bdf8;
+      --accent-soil: #f59e0b;
+      --accent-market: #a855f7;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font);
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    header {
+      background: linear-gradient(180deg, #16241b 0%, #131f17 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 1.15rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(10px);
+    }
+
+    .header-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .logo-badge {
+      background: linear-gradient(135deg, #15803d, #22c55e);
+      color: #fff;
+      font-weight: 800;
+      font-size: 1.35rem;
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 16px rgba(34, 197, 94, 0.35);
+    }
+
+    .brand-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+    }
+
+    .brand-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .system-status-pill {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.4rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .system-status-pill .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 0 8px var(--primary);
+    }
+
+    main {
+      flex: 1;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem 3rem;
+      width: 100%;
+    }
+
+    /* Layout Grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 460px 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    @media (max-width: 1100px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.35rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.85rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.15rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 0.4rem;
+    }
+
+    input[type="text"], input[type="number"], input[type="date"], select {
+      width: 100%;
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.62rem 0.85rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.92rem;
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s;
+      font-family: inherit;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary-glow);
+    }
+
+    .hint {
+      font-size: 0.74rem;
+      color: var(--text-dim);
+      margin-top: 0.3rem;
+    }
+
+    /* Plan Objective Toggle Cards */
+    .objective-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.65rem;
+      margin-top: 0.45rem;
+    }
+
+    .objective-card {
+      background: var(--surface-card);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.85rem 1rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .objective-card:hover {
+      background: var(--surface-subtle);
+      border-color: var(--border-accent);
+    }
+
+    .objective-card.active {
+      border-color: var(--primary);
+      background: var(--primary-glow);
+    }
+
+    .objective-icon {
+      font-size: 1.4rem;
+    }
+
+    .objective-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .objective-desc {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: var(--primary);
+      color: #052e16;
+      border: none;
+      padding: 0.85rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-submit:hover {
+      background: var(--primary-hover);
+      box-shadow: 0 4px 14px var(--primary-glow);
+    }
+
+    .btn-secondary {
+      width: 100%;
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 0.65rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 0.55rem;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface-subtle);
+      color: var(--text);
+    }
+
+    /* Diagnostics summary bar */
+    .diagnostics-banner {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .diag-stat {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.8rem;
+      text-align: center;
+    }
+
+    .diag-val {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--primary);
+      font-feature-settings: "tnum";
+    }
+
+    .diag-title {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-top: 0.2rem;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    /* Provenance tag */
+    .provenance-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.72rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      font-weight: 600;
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+    .dot.amber { background: var(--warning); }
+    .dot.blue { background: var(--accent-water); }
+
+    /* Strategy Recommendation Hero Card */
+    .hero-strategy {
+      background: linear-gradient(145deg, #182c1f 0%, #122117 100%);
+      border: 2px solid var(--primary);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 8px 32px rgba(34, 197, 94, 0.14);
+      position: relative;
+    }
+
+    .hero-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+      gap: 1rem;
+    }
+
+    .hero-badge {
+      background: var(--primary);
+      color: #052e16;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+      display: inline-block;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .hero-score-box {
+      text-align: center;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-accent);
+      border-radius: var(--radius-sm);
+      padding: 0.6rem 1.1rem;
+      min-width: 95px;
+    }
+
+    .hero-score-num {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1;
+    }
+
+    .hero-score-label {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-top: 0.25rem;
+      letter-spacing: 0.04em;
+    }
+
+    /* Crop Sequence Flow */
+    .sequence-flow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      margin: 1.25rem 0;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .crop-node {
+      background: var(--surface-card);
+      border: 1px solid var(--border-accent);
+      border-radius: var(--radius-sm);
+      padding: 0.65rem 0.95rem;
+      min-width: 150px;
+      flex: 1;
+    }
+
+    .crop-node-season {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 0.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      letter-spacing: 0.03em;
+    }
+
+    .crop-node-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .crop-node-family {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      margin-top: 0.15rem;
+    }
+
+    .flow-arrow {
+      color: var(--primary);
+      font-size: 1.25rem;
+      font-weight: 700;
+      user-select: none;
+    }
+
+    /* Metric Grid */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .metric-cell {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.7rem 0.85rem;
+    }
+
+    .metric-cell-val {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--text);
+      font-feature-settings: "tnum";
+    }
+
+    .metric-cell-val.positive {
+      color: var(--primary);
+    }
+
+    .metric-cell-title {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    /* Explanations & Alerts */
+    .section-desc {
+      font-size: 0.88rem;
+      color: #cbd5e1;
+      line-height: 1.6;
+      background: rgba(0, 0, 0, 0.25);
+      border-left: 3px solid var(--primary);
+      padding: 0.85rem 1.1rem;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin: 1rem 0;
+    }
+
+    .alert-box {
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 1rem;
+      margin-top: 0.75rem;
+      font-size: 0.82rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.7rem;
+      line-height: 1.5;
+    }
+
+    .alert-box.critical {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #fca5a5;
+    }
+
+    .alert-box.warning {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: #fde68a;
+    }
+
+    /* Comparison Cards */
+    .compare-section {
+      margin-top: 2rem;
+    }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .compare-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.2s;
+    }
+
+    .compare-card:hover {
+      border-color: var(--border-accent);
+      transform: translateY(-2px);
+    }
+
+    .compare-card.current {
+      border-color: var(--text-dim);
+      opacity: 0.9;
+    }
+
+    .checklist-item {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      margin-bottom: 0.5rem;
+      line-height: 1.45;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      padding: 1.5rem 2rem;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      text-align: center;
+      margin-top: auto;
+    }
+
+    .status-badge {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.55rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    details summary {
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding: 0.4rem 0;
+      user-select: none;
+    }
+
+    details summary:hover {
+      color: var(--text);
+    }
+
+    /* ── Explanation Tabs ─────────────────────────────────── */
+    .exp-tabs {
+      display: flex;
+      gap: 0.25rem;
+      border-bottom: 1px solid var(--border);
+      margin: 0.75rem 0 0;
+      flex-wrap: wrap;
+    }
+    .exp-tab {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 0.35rem 0.65rem;
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      cursor: pointer;
+      border: 1px solid transparent;
+      border-bottom: none;
+      color: var(--text-muted);
+      background: transparent;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .exp-tab:hover { color: var(--text); background: var(--surface-subtle); }
+    .exp-tab.active {
+      color: var(--primary);
+      background: var(--surface-subtle);
+      border-color: var(--border);
+      border-bottom-color: var(--surface-subtle);
+    }
+    .exp-panel { display: none; padding: 0.85rem 0 0.25rem; font-size: 0.82rem; line-height: 1.6; color: var(--text-muted); }
+    .exp-panel.active { display: block; }
+    .exp-panel ul { margin: 0.4rem 0; padding-left: 1.25rem; }
+    .exp-panel ul li { margin-bottom: 0.3rem; }
+    .exp-panel .gap-item { display: flex; gap: 0.5rem; align-items: flex-start; margin-bottom: 0.4rem; }
+    .exp-panel .gap-item span:first-child { font-size: 1rem; flex-shrink: 0; }
+
+    /* ── Scenario Sliders ─────────────────────────────────── */
+    .scenario-block {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.85rem 1rem;
+      margin-top: 0.75rem;
+      background: var(--surface-subtle);
+    }
+    .scenario-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.65rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.5rem;
+    }
+    .slider-row label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      min-width: 110px;
+      flex-shrink: 0;
+    }
+    .slider-row input[type=range] {
+      flex: 1;
+      accent-color: var(--primary);
+      cursor: pointer;
+      height: 4px;
+    }
+    .slider-val {
+      font-size: 0.78rem;
+      font-weight: 700;
+      min-width: 48px;
+      text-align: right;
+      color: var(--primary);
+    }
+
+    /* ── Glossary Tooltip ─────────────────────────────────── */
+    .gloss-wrap { position: relative; display: inline; }
+    .gloss-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 15px; height: 15px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      font-size: 9px;
+      font-weight: 800;
+      cursor: help;
+      vertical-align: middle;
+      margin-left: 2px;
+      flex-shrink: 0;
+    }
+    .gloss-popup {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 220px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.6rem 0.75rem;
+      font-size: 0.75rem;
+      line-height: 1.5;
+      color: var(--text);
+      z-index: 999;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      pointer-events: none;
+    }
+    .gloss-popup::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: var(--border);
+    }
+    .gloss-wrap:hover .gloss-popup,
+    .gloss-wrap:focus-within .gloss-popup { display: block; }
+    .gloss-popup-term { font-weight: 700; color: var(--primary); margin-bottom: 0.2rem; }
+
+    /* ── Data Sources Panel ───────────────────────────────── */
+    .data-sources-panel {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.85rem 1rem;
+      margin-top: 1rem;
+      background: var(--surface-subtle);
+    }
+    .ds-panel-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.65rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .ds-row {
+      display: grid;
+      grid-template-columns: 1fr 90px 90px;
+      gap: 0.4rem;
+      align-items: center;
+      padding: 0.35rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.75rem;
+    }
+    .ds-row:last-child { border-bottom: none; }
+    .ds-name { font-weight: 600; color: var(--text); }
+    .ds-res { color: var(--text-muted); font-size: 0.72rem; }
+    .ds-status {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 0.15rem 0.4rem;
+      border-radius: var(--radius-sm);
+      text-align: center;
+    }
+    .ds-status.observed { background: rgba(34,197,94,0.15); color: #22c55e; }
+    .ds-status.audited  { background: rgba(234,179,8,0.15);  color: #eab308; }
+    .ds-status.static   { background: rgba(99,102,241,0.15); color: #818cf8; }
+    .ds-header { font-size: 0.7rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.04em; }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <div class="logo-badge">🌾</div>
+        <div>
+          <div class="brand-title">FieldShift — Crop Rotation & Diagnostics</div>
+          <div class="brand-subtitle">Satellite-driven field diagnostics & crop rotation engine (NASA POWER · MODIS NDVI · SoilGrids)</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="system-status-pill">
+          <span class="dot"></span>
+          <span>Core Engine Active</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="dashboard-grid">
+      <!-- Left Column: User Inputs (Farmer Data) -->
+      <section class="card">
+        <div class="card-title">
+          <span>📋 User Inputs (Farmer Data)</span>
+          <span class="provenance-tag" id="provenance-tag">
+            <span class="dot" id="source-dot"></span>
+            <span id="source-label-text">Audited Snapshot</span>
+          </span>
+        </div>
+
+        <form id="farm-form">
+          <!-- 1. Last Crop -->
+          <div class="form-group">
+            <label for="select-last-crop">Last Crop (e.g., Maize)</label>
+            <select id="select-last-crop">
+              <option value="maize" selected>Summer Maize (Dura Shami)</option>
+              <option value="sorghum">Grain/Forage Sorghum (Dura Rafia)</option>
+              <option value="soybean">Soybean (Foul Soya)</option>
+              <option value="sesame">Sesame (Semsem)</option>
+              <option value="wheat">Wheat (Qamh)</option>
+              <option value="berseem">Egyptian Clover (Berseem)</option>
+              <option value="faba_bean">Faba Bean (Foul Baladi)</option>
+              <option value="sugar_beet">Sugar Beet (Bangar El-Sokkar)</option>
+            </select>
+            <div class="hint">Used to evaluate nutrient depletion and avoid monoculture / pest buildup.</div>
+          </div>
+
+          <!-- 4. Irrigation Method (was 5) -->
+          <div class="form-group">
+            <label for="select-irrigation">Irrigation Method (Surface Irrigation / Drip / Sprinkler)</label>
+            <select id="select-irrigation">
+              <option value="flood" selected>Surface Irrigation (55% efficiency)</option>
+              <option value="drip">Drip (88% efficiency)</option>
+              <option value="sprinkler">Sprinkler (75% efficiency)</option>
+            </select>
+          </div>
+
+          <!-- 6. Water Availability -->
+          <div class="form-group">
+            <label for="select-water-avail">Water Availability (Limited / Moderate / Abundant)</label>
+            <select id="select-water-avail">
+              <option value="tail" selected>Limited (Canal tail-end / deficit risk)</option>
+              <option value="middle">Moderate (Mid-canal / steady supply)</option>
+              <option value="head">Abundant (Canal head / plentiful supply)</option>
+            </select>
+          </div>
+
+          <!-- 7. Plan Objective -->
+          <div class="form-group">
+            <label>Plan Objective (Save Water / Improve Soil Health)</label>
+            <div class="objective-grid">
+              <div class="objective-card active" id="obj-water" data-objective="water">
+                <span class="objective-icon">💧</span>
+                <span class="objective-title">Save Water</span>
+                <span class="objective-desc">Maximize water productivity and select drought/heat-resilient crops.</span>
+              </div>
+              <div class="objective-card" id="obj-soil" data-objective="soil">
+                <span class="objective-icon">🌱</span>
+                <span class="objective-title">Improve Soil Health</span>
+                <span class="objective-desc">Restore nitrogen balance, enhance soil organic carbon, and break disease cycles.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Advanced Parameters (Collapsible) -->
+          <details style="margin-top: 0.5rem; border-top: 1px solid var(--border); padding-top: 0.5rem;">
+            <summary>⚙️ Additional Field Parameters (Optional)</summary>
+            <div style="margin-top: 0.75rem;">
+              <div class="form-group">
+                <label for="input-ece">Measured Soil ECe (dS/m) — Lab test</label>
+                <input type="number" id="input-ece" placeholder="Leave empty if not tested" min="0" max="100" step="0.1">
+              </div>
+              <div class="form-group">
+                <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem;">
+                  <input type="checkbox" id="check-livestock" checked>
+                  <span style="font-size: 0.82rem;">Farm raises livestock (higher weight for forage return)</span>
+                </label>
+                <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.35rem;">
+                  <input type="checkbox" id="check-nili">
+                  <span style="font-size: 0.82rem;">Force exploratory Nili cover crop (Cowpea)</span>
+                </label>
+              </div>
+            </div>
+          </details>
+
+          <!-- Scenario Simulation Sliders -->
+          <div class="scenario-block">
+            <div class="scenario-title">
+              <span>🔮</span>
+              <span>Climate Scenario Simulation</span>
+            </div>
+            <div class="slider-row">
+              <label for="slider-temp">🌡️ Temp. Shift</label>
+              <input type="range" id="slider-temp" min="-3" max="5" step="0.5" value="0">
+              <span class="slider-val" id="slider-temp-val">+0°C</span>
+            </div>
+            <div class="slider-row">
+              <label for="slider-water">💧 Water Supply</label>
+              <input type="range" id="slider-water" min="-50" max="30" step="5" value="0">
+              <span class="slider-val" id="slider-water-val">0%</span>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-submit" id="btn-recalculate">
+            <span>⚡</span>
+            <span>Calculate Optimal Rotations</span>
+          </button>
+
+          <button type="button" class="btn-secondary" id="btn-fetch-live">
+            <span>🛰️</span>
+            <span id="btn-fetch-text">Fetch Live Satellite Observations (NASA POWER / MODIS)</span>
+          </button>
+        </form>
+      </section>
+
+      <!-- Right Column: Diagnostics & Recommended Strategies -->
+      <section>
+        <!-- Field Diagnostics Banner -->
+        <div class="diagnostics-banner" id="diagnostics-container">
+          <!-- populated by JS -->
+        </div>
+
+        <!-- Hero Recommended Strategy Card -->
+        <div class="hero-strategy" id="hero-strategy-card">
+          <!-- populated by JS -->
+        </div>
+
+        <!-- Strategy Agronomic Explanation & Warnings -->
+        <div class="card" id="explanation-card">
+          <div class="card-title">
+            <span>🔬 Agronomic Rationale & Risk Layers</span>
+            <span class="status-badge" id="confidence-badge">Medium Confidence</span>
+          </div>
+          <div id="warnings-container">
+            <!-- populated by JS -->
+          </div>
+
+          <!-- 5-Element Explanation Tabs -->
+          <div class="exp-tabs" id="exp-tabs">
+            <button class="exp-tab active" data-tab="why">💡 Why</button>
+            <button class="exp-tab" data-tab="evidence">🛰️ Evidence</button>
+            <button class="exp-tab" data-tab="benefits">✅ Benefits</button>
+            <button class="exp-tab" data-tab="gaps">🔍 Gaps</button>
+            <button class="exp-tab" data-tab="risks">⚠️ Risks</button>
+          </div>
+
+          <div class="exp-panel active" id="exp-why"><!-- populated by JS --></div>
+          <div class="exp-panel" id="exp-evidence"><!-- populated by JS --></div>
+          <div class="exp-panel" id="exp-benefits"><!-- populated by JS --></div>
+          <div class="exp-panel" id="exp-gaps"><!-- populated by JS --></div>
+          <div class="exp-panel" id="exp-risks"><!-- populated by JS --></div>
+
+          <div style="margin-top: 1.25rem;">
+            <div style="font-weight: 700; font-size: 0.85rem; margin-bottom: 0.5rem;">
+              📋 Pre-Planting Technical Verification Checklist:
+            </div>
+            <div id="checklist-container">
+              <!-- populated by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Data Sources / Harmonization Panel -->
+        <div class="data-sources-panel" id="data-sources-panel">
+          <div class="ds-panel-title">
+            <span>🔭</span>
+            <span>Data Sources & Sensor Harmonization</span>
+          </div>
+          <div class="ds-row">
+            <span class="ds-header">Source</span>
+            <span class="ds-header">Resolution</span>
+            <span class="ds-header">Status</span>
+          </div>
+          <div class="ds-row">
+            <span class="ds-name">NASA POWER
+              <span class="gloss-wrap">
+                <span class="gloss-icon" tabindex="0">ⓘ</span>
+                <span class="gloss-popup">
+                  <div class="gloss-popup-term">NASA POWER</div>
+                  Daily reanalysis climate data: temperature, rainfall, solar radiation, humidity, wind speed — averaged over ~50 km grid cells from satellite observations and atmospheric models.
+                </span>
+              </span>
+            </span>
+            <span class="ds-res">~50 km · Daily</span>
+            <span class="ds-status" id="ds-status-climate">audited</span>
+          </div>
+          <div class="ds-row">
+            <span class="ds-name">MODIS NDVI
+              <span class="gloss-wrap">
+                <span class="gloss-icon" tabindex="0">ⓘ</span>
+                <span class="gloss-popup">
+                  <div class="gloss-popup-term">NDVI <span style="font-weight:400">(Normalized Difference Vegetation Index)</span></div>
+                  Satellite-measured greenness index (−1 to +1). Values >0.4 indicate healthy vegetation; &lt;0.1 indicates bare or stressed soil. Computed from MOD13Q1 250m tiles updated every 16 days.
+                </span>
+              </span>
+            </span>
+            <span class="ds-res">250 m · 16-day</span>
+            <span class="ds-status" id="ds-status-ndvi">audited</span>
+          </div>
+          <div class="ds-row">
+            <span class="ds-name">SoilGrids 2.0
+              <span class="gloss-wrap">
+                <span class="gloss-icon" tabindex="0">ⓘ</span>
+                <span class="gloss-popup">
+                  <div class="gloss-popup-term">ISRIC SoilGrids</div>
+                  Global soil property maps at 250 m from ISRIC. Provides organic carbon (g/kg), pH, clay/silt/sand fractions, and bulk density for 0–15 cm depth — used for salinity risk and nitrogen estimates.
+                </span>
+              </span>
+            </span>
+            <span class="ds-res">250 m · Static</span>
+            <span class="ds-status ds-status static" id="ds-status-soil">static</span>
+          </div>
+          <div class="ds-row">
+            <span class="ds-name">ET₀ FAO-56
+              <span class="gloss-wrap">
+                <span class="gloss-icon" tabindex="0">ⓘ</span>
+                <span class="gloss-popup">
+                  <div class="gloss-popup-term">Reference Evapotranspiration (ET₀)</div>
+                  Estimated water loss from a hypothetical reference grass crop. Computed from POWER climate drivers via the FAO-56 Penman–Monteith equation. Used to calculate irrigation requirements per crop.
+                </span>
+              </span>
+            </span>
+            <span class="ds-res">Derived · Daily</span>
+            <span class="ds-status audited" id="ds-status-et0">audited</span>
+          </div>
+          <div id="ds-extra-info" style="font-size:0.72rem; color:var(--text-dim); margin-top:0.5rem; line-height:1.5;"></div>
+        </div>
+
+        <!-- All Rotation Strategies Comparison -->
+        <div class="compare-section">
+          <div class="card-title" style="border-bottom: none; margin-bottom: 0;">
+            <span>🔄 Evaluated Crop Rotation Strategies Comparison</span>
+          </div>
+          <div class="compare-grid" id="compare-container">
+            <!-- populated by JS -->
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    FieldShift Core Engine · Powered by NASA POWER climate reanalysis, ORNL MOD13Q1 NDVI, ISRIC SoilGrids 2.0, and FAO-56 Penman-Monteith.
+  </footer>
+
+  <!-- 1. Load standalone bundle (supports file://, offline, and instant load) -->
+  <script src="dist/fieldshift.bundle.js"></script>
+
+  <!-- 2. Application Logic: connects to FieldShift bundle or live ES modules -->
+  <script type="module">
+    let FS = window.FieldShift;
+
+    // If running over HTTP and window.FieldShift is not yet present, load directly from src/
+    if (!FS && window.location.protocol.startsWith('http')) {
+      try {
+        const [farmer, rotation, indices, i18n, cropsMod, nasa] = await Promise.all([
+          import("./src/presentation/farmerModel.js"),
+          import("./src/engine/rotationEngine.js"),
+          import("./src/engine/fieldIndices.js"),
+          import("./src/i18n.js"),
+          import("./src/data/egyptCrops.json", { with: { type: "json" } }),
+          import("./src/services/nasaDataService.js"),
+        ]);
+        FS = {
+          egyptCrops: cropsMod.default,
+          evaluateFieldAndRotations: rotation.evaluateFieldAndRotations,
+          rankRotations: rotation.rankRotations,
+          computeFieldIndices: indices.computeFieldIndices,
+          getInitialFarmData: nasa.getInitialFarmData,
+          fetchUnifiedFarmData: nasa.fetchUnifiedFarmData,
+          GOALS: farmer.GOALS,
+          selectGoal: farmer.selectGoal,
+          proposedStrategy: farmer.proposedStrategy,
+          warningLayers: farmer.warningLayers,
+          buildFarmerModel: farmer.buildFarmerModel,
+          text: i18n.text,
+          formatNumber: i18n.formatNumber,
+          sourceLabel: i18n.sourceLabel,
+        };
+        window.FieldShift = FS;
+      } catch (err) {
+        console.warn("Could not load ES modules directly; will use bundle:", err);
+      }
+    }
+
+    if (!FS) {
+      alert("Error loading FieldShift core logic. Please run via a local server (e.g. npm start).");
+      throw new Error("FieldShift modules failed to load.");
+    }
+
+    // App State
+    let activeObjective = "water"; // "water" (Save Water) or "soil" (Improve Soil Health)
+    let currentFarmData = null;
+
+    // Predefined Egyptian Locations
+    const LOCATION_PRESETS = {
+      fayoum: {
+        name: "Fayoum (Etsa Basin)",
+        presetId: "fayoum_etsa",
+        lat: 29.2315,
+        lon: 30.7952,
+        landType: "old_clay",
+        salinity: "moderate",
+      },
+      kafr_el_sheikh: {
+        name: "Kafr El-Sheikh (North Delta)",
+        presetId: "delta_kafr_el_sheikh",
+        lat: 31.1107,
+        lon: 30.9388,
+        landType: "old_clay",
+        salinity: "high",
+      },
+      nubariya: {
+        name: "Nubariya (West Delta)",
+        presetId: "west_delta_nubariya",
+        lat: 30.6650,
+        lon: 30.0680,
+        landType: "new_sandy",
+        salinity: "none",
+      },
+    };
+
+    // DOM Elements
+    const elements = {
+      // Inputs
+      selectLastCrop: document.getElementById("select-last-crop"),
+      selectIrrigation: document.getElementById("select-irrigation"),
+      selectWaterAvail: document.getElementById("select-water-avail"),
+      inputEce: document.getElementById("input-ece"),
+      checkLivestock: document.getElementById("check-livestock"),
+      checkNili: document.getElementById("check-nili"),
+      objWater: document.getElementById("obj-water"),
+      objSoil: document.getElementById("obj-soil"),
+      btnFetchEl: document.getElementById("btn-fetch-live"),
+      btnFetchText: document.getElementById("btn-fetch-text"),
+      form: document.getElementById("farm-form"),
+      sliderTemp: document.getElementById("slider-temp"),
+      sliderTempVal: document.getElementById("slider-temp-val"),
+      sliderWater: document.getElementById("slider-water"),
+      sliderWaterVal: document.getElementById("slider-water-val"),
+
+      // Output & status
+      provenanceTag: document.getElementById("provenance-tag"),
+      sourceDot: document.getElementById("source-dot"),
+      sourceLabelText: document.getElementById("source-label-text"),
+      diagnosticsContainer: document.getElementById("diagnostics-container"),
+      heroCard: document.getElementById("hero-strategy-card"),
+      confidenceBadge: document.getElementById("confidence-badge"),
+      warningsContainer: document.getElementById("warnings-container"),
+      checklistContainer: document.getElementById("checklist-container"),
+      compareContainer: document.getElementById("compare-container"),
+      expWhy: document.getElementById("exp-why"),
+      expEvidence: document.getElementById("exp-evidence"),
+      expBenefits: document.getElementById("exp-benefits"),
+      expGaps: document.getElementById("exp-gaps"),
+      expRisks: document.getElementById("exp-risks"),
+      expTabs: document.getElementById("exp-tabs"),
+      dsStatusClimate: document.getElementById("ds-status-climate"),
+      dsStatusNdvi: document.getElementById("ds-status-ndvi"),
+      dsExtraInfo: document.getElementById("ds-extra-info"),
+    };
+
+    // Scenario Slider Handlers
+    function updateSliderDisplay() {
+      const t = Number(elements.sliderTemp.value);
+      const w = Number(elements.sliderWater.value);
+      elements.sliderTempVal.textContent = (t >= 0 ? "+" : "") + t + "°C";
+      elements.sliderWaterVal.textContent = (w >= 0 ? "+" : "") + w + "%";
+      elements.sliderTempVal.style.color = t > 0 ? "#ef4444" : t < 0 ? "#60a5fa" : "var(--primary)";
+      elements.sliderWaterVal.style.color = w < 0 ? "#ef4444" : w > 0 ? "#22c55e" : "var(--primary)";
+    }
+    elements.sliderTemp.addEventListener("input", () => { updateSliderDisplay(); runEvaluation(); });
+    elements.sliderWater.addEventListener("input", () => { updateSliderDisplay(); runEvaluation(); });
+    updateSliderDisplay();
+
+    // Tab switcher for explanation panel
+    document.getElementById("exp-tabs").addEventListener("click", (e) => {
+      const btn = e.target.closest(".exp-tab");
+      if (!btn) return;
+      const tab = btn.dataset.tab;
+      document.querySelectorAll(".exp-tab").forEach(t => t.classList.toggle("active", t.dataset.tab === tab));
+      document.querySelectorAll(".exp-panel").forEach(p => p.classList.toggle("active", p.id === "exp-" + tab));
+    });
+
+    // Objective Selector Handlers
+    function setObjective(objKey) {
+      activeObjective = objKey;
+      if (objKey === "water") {
+        elements.objWater.classList.add("active");
+        elements.objSoil.classList.remove("active");
+      } else {
+        elements.objSoil.classList.add("active");
+        elements.objWater.classList.remove("active");
+      }
+      runEvaluation();
+    }
+
+    elements.objWater.addEventListener("click", () => setObjective("water"));
+    elements.objSoil.addEventListener("click", () => setObjective("soil"));
+
+    // Default location: Fayoum (API auto-detects coordinates and land type)
+    const DEFAULT_LOC = LOCATION_PRESETS.fayoum;
+    const DEFAULT_FEDDANS = 5;
+
+    // Build User Inputs matching rotation engine requirements
+    function getUserInputs() {
+      const lastCropId = elements.selectLastCrop.value;
+      const lastCropObj = FS.egyptCrops.find(c => c.id === lastCropId);
+
+      // Infer rotation sequence baseline
+      let currentWinterId = "wheat";
+      let currentSummerId = "maize";
+
+      if (lastCropObj?.season === "Seifi") {
+        currentSummerId = lastCropId;
+        currentWinterId = activeObjective === "soil" ? "berseem" : "wheat";
+      } else if (lastCropObj?.season === "Shitwi") {
+        currentWinterId = lastCropId;
+        currentSummerId = "maize";
+      }
+
+      const weights = activeObjective === "soil"
+        ? FS.GOALS.soil.weights
+        : FS.GOALS.water.weights;
+
+      const eceVal = elements.inputEce.value.trim();
+
+      return {
+        feddans: DEFAULT_FEDDANS,
+        qirats: 0,
+        landType: DEFAULT_LOC.landType,
+        irrigationType: elements.selectIrrigation.value,
+        canalPosition: elements.selectWaterAvail.value,
+        salinityLevel: DEFAULT_LOC.salinity,
+        soilEceDsm: eceVal !== "" ? Number(eceVal) : null,
+        currentWinterId,
+        currentSummerId,
+        hasLivestock: elements.checkLivestock.checked,
+        forceNiliCover: elements.checkNili.checked,
+        weights,
+        scenarioModifiers: {
+          tempDeltaC: Number(elements.sliderTemp.value),
+          waterSupplyPctDelta: Number(elements.sliderWater.value),
+        },
+      };
+    }
+
+    // Main Engine Runner
+    function runEvaluation() {
+      try {
+        const inputs = getUserInputs();
+
+        if (!currentFarmData) {
+          currentFarmData = FS.getInitialFarmData(DEFAULT_LOC.lat, DEFAULT_LOC.lon, DEFAULT_LOC.presetId);
+        }
+
+        // Update Source Provenance Tag
+        const isObserved = Object.values(currentFarmData.sources || {}).some(s => s.kind === "observed");
+        elements.sourceDot.className = "dot " + (isObserved ? "" : "amber");
+        elements.sourceLabelText.textContent = FS.sourceLabel(currentFarmData.sources?.climate, "en");
+
+        // Core evaluation pipeline
+        const evaluation = FS.evaluateFieldAndRotations(currentFarmData, inputs, FS.egyptCrops);
+        const model = FS.buildFarmerModel(evaluation, inputs, currentFarmData, "en");
+
+        renderDiagnostics(evaluation.diagnostics);
+        renderProposedStrategy(model.proposed, inputs, evaluation);
+        renderRationaleAndWarnings(model.proposed, currentFarmData, evaluation.diagnostics, model.warnings);
+        renderComparisonCards(evaluation.strategies, evaluation.pitchCounterfactual, inputs);
+        renderDataSourcesPanel(currentFarmData.sources);
+
+      } catch (err) {
+        console.error("Evaluation error:", err);
+      }
+    }
+
+    // Render Diagnostics Banner
+    function renderDiagnostics(d) {
+      if (!d) return;
+      const canopyVal = d.canopyAnomaly?.value != null ? (d.canopyAnomaly.value > 0 ? "+" : "") + d.canopyAnomaly.value.toFixed(2) : "—";
+      const socVal = d.soilOrganicCarbon != null ? d.soilOrganicCarbon.toFixed(1) + " g/kg" : "—";
+      const rootWet = d.rootZoneWetnessAvg != null ? (d.rootZoneWetnessAvg * 100).toFixed(0) + "%" : "—";
+
+      elements.diagnosticsContainer.innerHTML = `
+        <div class="diag-stat">
+          <div class="diag-val">${d.heatStressDays} <span style="font-size:0.8rem">days</span></div>
+          <div class="diag-title">Heat Stress (>38°C)</div>
+        </div>
+        <div class="diag-stat">
+          <div class="diag-val">${d.bareSoilDays} <span style="font-size:0.8rem">days</span></div>
+          <div class="diag-title">Autumn Bare Soil</div>
+        </div>
+        <div class="diag-stat">
+          <div class="diag-val">${canopyVal}</div>
+          <div class="diag-title">Canopy Anomaly</div>
+        </div>
+        <div class="diag-stat">
+          <div class="diag-val">${d.salinityRisk ?? "—"} <span style="font-size:0.8rem">/100</span></div>
+          <div class="diag-title">Salinity Risk</div>
+        </div>
+        <div class="diag-stat">
+          <div class="diag-val">${socVal}</div>
+          <div class="diag-title">Soil Org. Carbon</div>
+        </div>
+        <div class="diag-stat">
+          <div class="diag-val">${rootWet}</div>
+          <div class="diag-title">Root-Zone Wetness</div>
+        </div>
+      `;
+    }
+
+    // Render Hero Strategy
+    function renderProposedStrategy(strat, inputs, evaluation) {
+      if (!strat) {
+        elements.heroCard.innerHTML = `<div style="text-align:center; padding:1.5rem; color:var(--text-muted);">No strategy matches constraints.</div>`;
+        return;
+      }
+
+      const totalWaterFormatted = FS.formatNumber(strat.totalFarmWaterM3, "en");
+      const waterPerFeddanFormatted = FS.formatNumber(strat.grossWaterM3Feddan, "en");
+
+      const cropNodes = strat.crops.map((c, idx) => `
+        <div class="crop-node">
+          <div class="crop-node-season">
+            <span>${c.season === 'Shitwi' ? '🌾' : c.season === 'Seifi' ? '☀️' : '🍂'}</span>
+            <span>${c.season}</span>
+          </div>
+          <div class="crop-node-name">${c.nameEn}</div>
+          <div class="crop-node-family">${c.family} · Kc: ${c.kc}</div>
+        </div>
+        ${idx < strat.crops.length - 1 ? '<div class="flow-arrow">➔</div>' : ''}
+      `).join("");
+
+      const objectiveLabel = activeObjective === "water" ? "Save Water Priority" : "Soil Health Priority";
+
+      elements.heroCard.innerHTML = `
+        <div class="hero-header">
+          <div>
+            <div class="hero-badge">RECOMMENDED · ${objectiveLabel}</div>
+            <h2 style="font-size: 1.4rem; font-weight: 800; margin-top: 0.4rem; color: #fff;">
+              ${strat.labelEn}
+            </h2>
+          </div>
+          <div class="hero-score-box">
+            <div class="hero-score-num">${strat.finalSuitability}</div>
+            <div class="hero-score-label">Suitability</div>
+          </div>
+        </div>
+
+        <div class="sequence-flow">
+          ${cropNodes}
+        </div>
+
+        <div class="metric-grid">
+          <div class="metric-cell">
+            <div class="metric-cell-val ${strat.waterSavedPercent > 0 ? 'positive' : ''}">
+              ${strat.waterSavedPercent > 0 ? '+' : ''}${strat.waterSavedPercent}%
+            </div>
+            <div class="metric-cell-title">Water Savings</div>
+          </div>
+          <div class="metric-cell">
+            <div class="metric-cell-val">${waterPerFeddanFormatted}</div>
+            <div class="metric-cell-title">m³ / feddan / cycle</div>
+          </div>
+          <div class="metric-cell">
+            <div class="metric-cell-val">${totalWaterFormatted} m³</div>
+            <div class="metric-cell-title">Total Farm Water (${inputs.feddans} feddans)</div>
+          </div>
+          <div class="metric-cell">
+            <div class="metric-cell-val">${strat.nitrogenBalance > 0 ? '+' : ''}${strat.nitrogenBalance}</div>
+            <div class="metric-cell-title">Nitrogen Balance</div>
+          </div>
+          <div class="metric-cell">
+            <div class="metric-cell-val">${strat.marketForageScore} / 100</div>
+            <div class="metric-cell-title">Market / Forage</div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Helper: wrap a term with a glossary tooltip (uses FS.SCIENTIFIC_GLOSSARY if available)
+    function withGlossary(text, termKey) {
+      const glossary = FS.SCIENTIFIC_GLOSSARY || {};
+      const entry = glossary[termKey];
+      if (!entry) return text;
+      const def = typeof entry === "object" ? (entry.definition?.en || entry.en || entry.simplified?.en || "") : String(entry);
+      const name = typeof entry === "object" ? (entry.term?.en || entry.name?.en || termKey) : termKey;
+      return `${text}<span class="gloss-wrap"><span class="gloss-icon" tabindex="0">ⓘ</span><span class="gloss-popup"><div class="gloss-popup-term">${name}</div>${def}</span></span>`;
+    }
+
+    // Render Explanations and Warnings in English
+    function renderRationaleAndWarnings(strat, data, diag, warnings) {
+      if (!strat) return;
+
+      const exp = strat.explanation;
+
+      // Confidence badge
+      const conf = exp?.confidence || "medium";
+      elements.confidenceBadge.textContent = conf.toUpperCase() + " DATA CONFIDENCE";
+      elements.confidenceBadge.style.background = conf === 'high' ? '#15803d' : conf === 'medium' ? '#b45309' : '#b91c1c';
+      elements.confidenceBadge.style.color = '#fff';
+
+      // Warnings
+      let warningsHtml = "";
+      if (warnings.critical && warnings.critical.length > 0) {
+        warningsHtml += warnings.critical.map(w => `
+          <div class="alert-box critical">
+            <span>🚨</span>
+            <div>${w.en || w}</div>
+          </div>
+        `).join("");
+      }
+      if (warnings.contextual && warnings.contextual.length > 0) {
+        warningsHtml += warnings.contextual.map(w => `
+          <div class="alert-box warning">
+            <span>⚠️</span>
+            <div>${w.en || w}</div>
+          </div>
+        `).join("");
+      }
+      elements.warningsContainer.innerHTML = warningsHtml;
+
+      // ── Tab 1: Why ───────────────────────────────────────────
+      const whyText = exp?.why?.en || exp?.whySuggested || "This strategy was selected based on field diagnostics and soil/climate conditions.";
+      const confidenceReasons = exp?.confidenceReasons || [];
+      const confidenceMeaning = exp?.confidenceMeaning?.en || "";
+      elements.expWhy.innerHTML = `
+        <p>${whyText}</p>
+        ${confidenceMeaning ? `<p style="margin-top:0.5rem; color:var(--text-dim); font-size:0.78rem;">📊 ${confidenceMeaning}</p>` : ""}
+        ${confidenceReasons.length ? `<ul>${confidenceReasons.map(r => `<li>${r?.en || r}</li>`).join("")}</ul>` : ""}
+      `;
+
+      // ── Tab 2: Evidence ──────────────────────────────────────
+      const evidence = exp?.supportingEvidence || [];
+      const evidenceArr = Array.isArray(evidence) ? evidence : (typeof evidence === "string" ? [evidence] : []);
+      const heatDays = diag?.heatStressDays ?? "—";
+      const bareSoil = diag?.bareSoilDays ?? "—";
+      const ndviAnomaly = diag?.canopyAnomaly?.value != null ? (diag.canopyAnomaly.value > 0 ? "+" : "") + diag.canopyAnomaly.value.toFixed(2) : "—";
+      const rootWet = diag?.rootZoneWetnessAvg != null ? (diag.rootZoneWetnessAvg * 100).toFixed(0) + "%" : "—";
+      elements.expEvidence.innerHTML = `
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.4rem 0.75rem; margin-bottom:0.75rem;">
+          <div style="font-size:0.75rem;"><span style="color:var(--text-dim)">Heat Stress Days</span><br><strong>${heatDays}</strong></div>
+          <div style="font-size:0.75rem;"><span style="color:var(--text-dim)">${withGlossary("Bare Soil Days","bareSoilWindow")}</span><br><strong>${bareSoil}</strong></div>
+          <div style="font-size:0.75rem;"><span style="color:var(--text-dim)">${withGlossary("NDVI Anomaly","ndvi")}</span><br><strong>${ndviAnomaly}</strong></div>
+          <div style="font-size:0.75rem;"><span style="color:var(--text-dim)">Root-Zone Wetness</span><br><strong>${rootWet}</strong></div>
+        </div>
+        ${evidenceArr.length ? `<ul>${evidenceArr.map(e => `<li>${e?.en || e}</li>`).join("")}</ul>` : "<p style='color:var(--text-dim)'>Run live satellite fetch for detailed evidence metrics.</p>"}
+      `;
+
+      // ── Tab 3: Benefits ──────────────────────────────────────
+      const benefits = exp?.expectedBenefits || "";
+      const benefitsArr = Array.isArray(benefits) ? benefits : (typeof benefits === "string" && benefits ? benefits.split(/[.;]/).map(s => s.trim()).filter(Boolean) : []);
+      elements.expBenefits.innerHTML = benefitsArr.length
+        ? `<ul>${benefitsArr.map(b => `<li>${b?.en || b}</li>`).join("")}</ul>`
+        : `<p style="color:var(--text-dim)">Expected benefits depend on irrigation method and soil management practices.</p>`;
+
+      // ── Tab 4: Gaps ──────────────────────────────────────────
+      const gaps = exp?.informationGaps || [];
+      const gapsArr = Array.isArray(gaps) ? gaps : (typeof gaps === "string" && gaps ? gaps.split(/[.;]/).map(s => s.trim()).filter(Boolean) : []);
+      const gapIcons = ["📡","🌊","🐛","💰","🔬"];
+      elements.expGaps.innerHTML = `
+        <p style="color:var(--text-dim); margin-bottom:0.6rem; font-size:0.75rem;">Satellite data cannot detect these factors — ground-truthing recommended:</p>
+        ${gapsArr.length ? gapsArr.map((g, i) => `<div class="gap-item"><span>${gapIcons[i % gapIcons.length]}</span><span>${g?.en || g}</span></div>`).join("") : `
+          <div class="gap-item"><span>📡</span><span>Soil ECe depth profile (satellite only estimates surface)</span></div>
+          <div class="gap-item"><span>🐛</span><span>Pest and disease pressure (requires field scouting)</span></div>
+          <div class="gap-item"><span>🌊</span><span>Canal siltation and actual flow rates</span></div>
+          <div class="gap-item"><span>💰</span><span>Current local market prices for crop selection</span></div>
+        `}
+      `;
+
+      // ── Tab 5: Risks ─────────────────────────────────────────
+      const risks = exp?.risksLocalReview || [];
+      const risksArr = Array.isArray(risks) ? risks : (typeof risks === "string" && risks ? risks.split(/[.;]/).map(s => s.trim()).filter(Boolean) : []);
+      elements.expRisks.innerHTML = `
+        <div class="alert-box warning" style="margin-bottom:0.65rem; font-size:0.75rem;">
+          ⚠️ Satellite diagnostics support decision-making but do not replace agronomist consultation. Verify all recommendations with local extension services.
+        </div>
+        ${risksArr.length ? `<ul>${risksArr.map(r => `<li>${r?.en || r}</li>`).join("")}</ul>` : `
+          <ul>
+            <li>Water allocation may change based on canal schedule — confirm with local authority</li>
+            <li>Seed variety selection should factor in local pest resistance</li>
+            <li>Soil test before planting is strongly recommended for precise ${withGlossary("salinity","salinityEce")} management</li>
+          </ul>
+        `}
+      `;
+
+      // Verification Checklist
+      const checklist = strat.verificationChecklist || exp?.checklist || [];
+      if (checklist.length) {
+        elements.checklistContainer.innerHTML = checklist.map(item => `
+          <div class="checklist-item">
+            <span>☑️</span>
+            <div>${item?.en || item}</div>
+          </div>
+        `).join("");
+      } else {
+        elements.checklistContainer.innerHTML = "";
+      }
+    }
+
+    // Update Data Sources Panel status badges
+    function renderDataSourcesPanel(dataSources) {
+      const src = dataSources || {};
+      const climateKind = src.climate?.kind || "audited";
+      const ndviKind = src.ndvi?.kind || "audited";
+
+      if (elements.dsStatusClimate) {
+        elements.dsStatusClimate.textContent = climateKind === "observed" ? "LIVE" : "AUDITED";
+        elements.dsStatusClimate.className = "ds-status " + (climateKind === "observed" ? "observed" : "audited");
+      }
+      if (elements.dsStatusNdvi) {
+        elements.dsStatusNdvi.textContent = ndviKind === "observed" ? "LIVE" : "AUDITED";
+        elements.dsStatusNdvi.className = "ds-status " + (ndviKind === "observed" ? "observed" : "audited");
+      }
+      if (elements.dsExtraInfo) {
+        const tempD = Number(elements.sliderTemp.value);
+        const waterD = Number(elements.sliderWater.value);
+        const hasScenario = tempD !== 0 || waterD !== 0;
+        elements.dsExtraInfo.textContent = hasScenario
+          ? `🔮 Scenario active: ${tempD >= 0 ? "+" : ""}${tempD}°C temperature, ${waterD >= 0 ? "+" : ""}${waterD}% water supply. Results show projected crop suitability under modified conditions.`
+          : `Data harmonized to Fayoum (Lat 29.23°N, Lon 30.80°E). All resolutions resampled to field scale using weighted averaging over 5-feddan footprint.`;
+      }
+    }
+
+    // Render Comparison Cards in English
+    function renderComparisonCards(strategies, counterfactual, inputs) {
+      const all = [...strategies];
+      if (counterfactual && !all.some(s => s.id === counterfactual.id)) {
+        all.push({
+          ...counterfactual,
+          waterSavedPercent: Math.round((1 - counterfactual.grossWaterM3Feddan / strategies[0].grossWaterM3Feddan) * 100)
+        });
+      }
+
+      elements.compareContainer.innerHTML = all.map(s => {
+        const cropsList = s.crops.map(c => c.nameEn).join(" + ");
+        const isBaseline = s.id === "baseline";
+        return `
+          <div class="compare-card ${isBaseline ? 'current' : ''}">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                <span class="status-badge" style="background:var(--surface-subtle); color:var(--text);">${s.badge}</span>
+                <span style="font-weight:800; font-size:1.1rem; color:var(--primary);">${s.finalSuitability}</span>
+              </div>
+              <div style="font-weight:700; font-size:0.95rem; margin-bottom:0.35rem; color:#fff;">
+                ${s.labelEn}
+              </div>
+              <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem;">
+                🌱 ${cropsList}
+              </div>
+            </div>
+
+            <div style="border-top:1px solid var(--border); padding-top:0.6rem; font-size:0.75rem;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
+                <span style="color:var(--text-muted);">Water Savings:</span>
+                <span style="font-weight:700; color:${s.waterSavedPercent > 0 ? 'var(--primary)' : 'var(--text)'};">
+                  ${s.waterSavedPercent > 0 ? '+' : ''}${s.waterSavedPercent}%
+                </span>
+              </div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
+                <span style="color:var(--text-muted);">Water / Feddan:</span>
+                <span style="font-weight:700;">${FS.formatNumber(s.grossWaterM3Feddan, "en")} m³</span>
+              </div>
+              <div style="display:flex; justify-content:space-between;">
+                <span style="color:var(--text-muted);">Nitrogen Balance:</span>
+                <span style="font-weight:700;">${s.nitrogenBalance > 0 ? '+' : ''}${s.nitrogenBalance}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    // Live Satellite Data Fetch Button — calls backend which queries NASA POWER + MODIS + SoilGrids
+    elements.btnFetchEl.addEventListener("click", async () => {
+      const lastCropId = elements.selectLastCrop.value;
+      const lastCropObj = FS.egyptCrops.find(c => c.id === lastCropId);
+      const eceVal = elements.inputEce.value.trim();
+
+      // Map internal select values to backend-expected strings
+      const irrigationMap = { flood: "Surface Irrigation", drip: "Drip", sprinkler: "Sprinkler" };
+      const waterMap = { tail: "Limited", middle: "Moderate", head: "Abundant" };
+      const objectiveLabel = activeObjective === "soil" ? "Improve Soil Health" : "Save Water";
+
+      elements.btnFetchText.textContent = "Retrieving live satellite data… (10–25 s)";
+      elements.btnFetchEl.style.opacity = "0.7";
+      elements.btnFetchEl.style.pointerEvents = "none";
+
+      try {
+        const payload = {
+          landLocation: "fayoum",  // API auto-calculates coordinates and land type
+          landArea: DEFAULT_FEDDANS,
+          lastCrop: lastCropObj?.nameEn || "Maize",
+          irrigationMethod: irrigationMap[elements.selectIrrigation.value] || "Surface Irrigation",
+          waterAvailability: waterMap[elements.selectWaterAvail.value] || "Limited",
+          planObjective: objectiveLabel,
+          soilEceDsm: eceVal !== "" ? Number(eceVal) : null,
+          hasLivestock: elements.checkLivestock.checked,
+          forceNiliCover: elements.checkNili.checked,
+        };
+
+        const response = await fetch("/api/farm/calculate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          const errJson = await response.json().catch(() => ({}));
+          throw new Error(errJson.message || `HTTP ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        // Update source provenance
+        const isObserved = Object.values(result.dataSources || {}).some(s => s.kind === "observed");
+        elements.sourceDot.className = "dot " + (isObserved ? "" : "amber");
+        elements.sourceLabelText.textContent = FS.sourceLabel(result.dataSources?.climate, "en");
+        if (result.dataYear && elements.provenanceTag) {
+          elements.provenanceTag.setAttribute("data-year", result.dataYear);
+        }
+
+        // Render results from backend response
+        const inputs = getUserInputs();
+        renderDiagnostics(result.diagnostics);
+        renderProposedStrategy(result.proposed, inputs, { diagnostics: result.diagnostics, strategies: result.strategies });
+        renderRationaleAndWarnings(result.proposed, {}, result.diagnostics, result.warnings || { critical: [], contextual: [] });
+        renderComparisonCards(result.strategies || [], null, inputs);
+        renderDataSourcesPanel(result.dataSources);
+
+      } catch (err) {
+        console.warn("Backend fetch failed, using local fallback:", err.message);
+        runEvaluation();
+      } finally {
+        elements.btnFetchText.textContent = "Fetch Live Satellite Observations (NASA POWER / MODIS)";
+        elements.btnFetchEl.style.opacity = "1";
+        elements.btnFetchEl.style.pointerEvents = "auto";
+      }
+    });
+
+    // Form Submit / Inputs Change Listener for instant reactivity
+    elements.form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      runEvaluation();
+    });
+
+    // Instant recalculation on any input change
+    ["input", "change"].forEach(evtName => {
+      elements.form.addEventListener(evtName, (e) => {
+        if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") {
+          runEvaluation();
+        }
+      });
+    });
+
+    // Initial Setup — using default location (Fayoum)
+    currentFarmData = FS.getInitialFarmData(DEFAULT_LOC.lat, DEFAULT_LOC.lon, DEFAULT_LOC.presetId);
+    runEvaluation();
+  </script>
+</body>
+</html>
