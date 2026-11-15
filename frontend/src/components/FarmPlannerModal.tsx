@@ -2,12 +2,16 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+  AlertTriangle,
   ArrowLeft,
   ArrowRight,
   BookOpen,
+  Calendar,
+  CalendarDays,
   CheckCircle2,
   ChevronDown,
   ChevronUp,
+  CloudRain,
   Download,
   Droplets,
   Eye,
@@ -18,16 +22,21 @@ import {
   Loader2,
   Lock,
   MapPin,
+  PenLine,
   PenTool,
   RotateCcw,
+  Ruler,
   Satellite,
   ShieldAlert,
   ShieldCheck,
   Sliders,
   Sparkles,
+  Sprout,
   Sun,
+  Target,
   Thermometer,
   User,
+  Waves,
   Wheat,
   Wind,
   X,
@@ -368,58 +377,36 @@ export default function FarmPlannerModal({
       role="dialog"
       aria-modal="true"
       aria-label="Crop Rotation & Farm Planner"
-      className="fixed inset-0 z-[480] flex items-center justify-center p-3 sm:p-5 bg-[#070B0E]/75 backdrop-blur-md animate-fade-in"
+      className="fixed inset-0 z-[480] flex items-center justify-center p-0 sm:p-4 md:p-5 bg-[#070B0E]/85 backdrop-blur-md animate-fade-in"
     >
-      <div dir={dir} className="w-full max-w-4xl max-h-[92dvh] flex flex-col rounded-3xl bg-[#0B1015]/95 border border-white/10 shadow-2xl text-[#F2F7F4] overflow-hidden">
-        {/* Top Header: Field Info, Area, NASA Weather & Glossary Button */}
-        <div className="shrink-0 px-5 py-4 border-b border-white/[0.08] bg-[#0D1318]">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex-1 min-w-[220px]">
-              <div className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-[#A3E4B7] mb-1">
-                <img src="/logo.svg" alt="Sky Space" className="w-3.5 h-3.5 object-contain" />
+      <div dir={dir} className="w-full max-w-4xl h-full sm:h-auto sm:max-h-[92dvh] flex flex-col rounded-none sm:rounded-3xl bg-[#0B1015]/95 border-0 sm:border border-white/10 shadow-2xl text-[#F2F7F4] overflow-hidden">
+        {/* Top Header: Field Info, Area, NASA Weather & Mobile Controls */}
+        <div className="shrink-0 px-3.5 sm:px-5 py-2.5 sm:py-3.5 border-b border-white/[0.08] bg-[#0D1318]">
+          {/* Row 1: Brand/Stage Title & Header Actions (Lang, Glossary, Close) */}
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <div className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-[0.16em] text-[#A3E4B7] truncate">
+              <img src="/logo.svg" alt="Sky Space" className="w-3.5 h-3.5 object-contain shrink-0" />
+              <span className="truncate">
                 {step === "inputs"
                   ? (lang === "ar" ? "سكاي سبيس • بيانات الحقل والزراعة" : "Sky Space • Ground Parameters")
-                  : (lang === "ar" ? "سكاي سبيس • خطة الدورة الزراعية المثالية" : "Sky Space Engine • Optimal Crop Rotation Plan")}
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                {step === "inputs" ? (
-                  <input
-                    type="text"
-                    value={field.name}
-                    onChange={(e) => onUpdateFieldName(e.target.value)}
-                    aria-label="Field Name"
-                    className="text-base sm:text-lg font-bold bg-[#121A21] border border-white/10 rounded-xl px-2.5 py-1 text-[#F2F7F4] focus:outline-none focus:ring-2 focus:ring-[#A3E4B7]/40 w-full sm:w-60"
-                  />
-                ) : (
-                  <h2 className="text-base sm:text-lg font-bold text-[#F2F7F4]">
-                    {field.name}
-                  </h2>
-                )}
-                <span className="px-3 py-1 rounded-full bg-[#111920] border border-white/10 text-xs font-semibold text-[#A3E4B7]">
-                  {activeFeddans} {lang === "ar" ? "فدان" : "Feddans"} ({field.areaHectares.toFixed(2)} {lang === "ar" ? "هكتار" : "Ha"})
-                </span>
-                <span className="text-[11px] text-[#8A9B93] flex items-center gap-1">
-                  <MapPin className="w-3 h-3 text-[#A3E4B7]" />
-                  {field.centroid[0].toFixed(4)}°N, {field.centroid[1].toFixed(4)}°E
-                </span>
-              </div>
+                  : (lang === "ar" ? "سكاي سبيس • خطة الدورة الزراعية" : "Sky Space Engine • Rotation Plan")}
+              </span>
             </div>
 
-            {/* NASA Weather Pill, Glossary Button & Auth Status */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 shrink-0">
               {/* Language Toggle */}
-              <div className="inline-flex items-center rounded-2xl border border-white/10 bg-[#111920] overflow-hidden text-[10px] font-bold shrink-0">
+              <div className="inline-flex items-center rounded-full border border-white/10 bg-[#111920] overflow-hidden text-[9px] sm:text-[10px] font-bold shrink-0">
                 <button
                   type="button"
                   onClick={() => setLang("ar")}
-                  className={`px-2.5 py-1.5 transition ${lang === "ar" ? "bg-[#A3E4B7] text-[#070B0E]" : "text-[#8A9B93] hover:text-[#F2F7F4]"}`}
+                  className={`px-2 py-0.5 sm:px-2.5 sm:py-1 transition ${lang === "ar" ? "bg-[#A3E4B7] text-[#070B0E]" : "text-[#8A9B93] hover:text-[#F2F7F4]"}`}
                 >
                   AR
                 </button>
                 <button
                   type="button"
                   onClick={() => setLang("en")}
-                  className={`px-2.5 py-1.5 transition ${lang === "en" ? "bg-[#A3E4B7] text-[#070B0E]" : "text-[#8A9B93] hover:text-[#F2F7F4]"}`}
+                  className={`px-2 py-0.5 sm:px-2.5 sm:py-1 transition ${lang === "en" ? "bg-[#A3E4B7] text-[#070B0E]" : "text-[#8A9B93] hover:text-[#F2F7F4]"}`}
                 >
                   EN
                 </button>
@@ -429,32 +416,12 @@ export default function FarmPlannerModal({
               <button
                 type="button"
                 onClick={() => setShowGlossary(true)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-[#111920] hover:bg-[#162029] border border-[#A3E4B7]/30 text-xs font-bold text-[#A3E4B7] transition shadow-sm"
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#111920] hover:bg-[#162029] border border-[#A3E4B7]/30 text-[11px] font-bold text-[#A3E4B7] transition shadow-sm"
                 title={t("modal.glossaryBtn")}
               >
                 <BookOpen className="w-3.5 h-3.5 text-[#A3E4B7]" />
                 <span className="hidden sm:inline">{t("modal.glossaryBtn")}</span>
               </button>
-
-              <div className="flex items-center gap-3 px-3 py-1.5 rounded-2xl bg-[#111920] border border-white/[0.08] text-xs">
-                {isLoadingNasa ? (
-                  <span className="inline-flex items-center gap-1.5 text-[#8A9B93]">
-                    <Loader2 className="w-3.5 h-3.5 animate-spin text-[#A3E4B7]" />
-                    Syncing NASA...
-                  </span>
-                ) : (
-                  <>
-                    <span className="inline-flex items-center gap-1 text-amber-300 font-semibold">
-                      <Thermometer className="w-3.5 h-3.5" />
-                      {climateSummary.avgTemp !== null ? `${climateSummary.avgTemp.toFixed(0)}°C` : "Weather Synced"}
-                    </span>
-                    <span className="inline-flex items-center gap-1 text-[#A3E4B7] font-semibold">
-                      <Droplets className="w-3.5 h-3.5" />
-                      {climateSummary.latestWetness !== null ? `${Math.round(climateSummary.latestWetness * 100)}% moisture` : "—"}
-                    </span>
-                  </>
-                )}
-              </div>
 
               {user ? (
                 <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#A3E4B7]/15 border border-[#A3E4B7]/30 text-[#A3E4B7] text-xs font-semibold">
@@ -465,18 +432,83 @@ export default function FarmPlannerModal({
                 <button
                   type="button"
                   onClick={onOpenAuth}
-                  className="hidden sm:inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 text-xs text-[#F2F7F4] font-semibold transition"
+                  className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 text-xs text-[#F2F7F4] font-semibold transition"
                 >
                   <Lock className="w-3 h-3 text-[#A3E4B7]" />
                   Sign In
                 </button>
+              )}
+
+              {/* Quick Close / Minimize Button */}
+              <button
+                type="button"
+                onClick={onMinimizeToMap}
+                title={t("modal.viewMap")}
+                className="p-1 rounded-full text-[#8A9B93] hover:text-white hover:bg-white/10 transition"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Row 2: Field Name Input + Area Badge + NASA Climate Pill */}
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
+              {step === "inputs" ? (
+                <div className="relative flex items-center flex-1 sm:flex-initial">
+                  <PenLine className="w-3.5 h-3.5 text-[#A3E4B7] absolute start-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <input
+                    type="text"
+                    value={field.name}
+                    onChange={(e) => onUpdateFieldName(e.target.value)}
+                    aria-label="Field Name"
+                    placeholder={lang === "ar" ? "اسم الحقل..." : "Field name..."}
+                    className="text-xs sm:text-base font-bold bg-[#121A21] border border-white/10 rounded-xl ps-8 pe-2.5 py-1 text-[#F2F7F4] focus:outline-none focus:ring-2 focus:ring-[#A3E4B7]/40 w-full sm:w-60"
+                  />
+                </div>
+              ) : (
+                <h2 className="text-xs sm:text-base font-bold text-[#F2F7F4] flex items-center gap-1.5 truncate">
+                  <PenLine className="w-3.5 h-3.5 text-[#A3E4B7]" />
+                  <span className="truncate">{field.name}</span>
+                </h2>
+              )}
+
+              <span className="px-2.5 py-1 rounded-full bg-[#111920] border border-white/10 text-[10px] sm:text-xs font-semibold text-[#A3E4B7] flex items-center gap-1 shrink-0">
+                <Ruler className="w-3 h-3 text-[#A3E4B7]" />
+                {activeFeddans} {lang === "ar" ? "فدان" : "Fed"} ({field.areaHectares.toFixed(2)} ha)
+              </span>
+
+              <span className="text-[10px] text-[#8A9B93] hidden md:flex items-center gap-1">
+                <MapPin className="w-3 h-3 text-[#A3E4B7]" />
+                {field.centroid[0].toFixed(4)}°, {field.centroid[1].toFixed(4)}°
+              </span>
+            </div>
+
+            {/* NASA Weather Pill */}
+            <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#111920] border border-white/[0.08] text-[10px] sm:text-xs shrink-0">
+              {isLoadingNasa ? (
+                <span className="inline-flex items-center gap-1 text-[#8A9B93]">
+                  <Loader2 className="w-3 h-3 animate-spin text-[#A3E4B7]" />
+                  Syncing...
+                </span>
+              ) : (
+                <>
+                  <span className="inline-flex items-center gap-1 text-amber-300 font-semibold">
+                    <Thermometer className="w-3 h-3" />
+                    {climateSummary.avgTemp !== null ? `${climateSummary.avgTemp.toFixed(0)}°C` : "Synced"}
+                  </span>
+                  <span className="inline-flex items-center gap-1 text-[#A3E4B7] font-semibold">
+                    <Droplets className="w-3 h-3" />
+                    {climateSummary.latestWetness !== null ? `${Math.round(climateSummary.latestWetness * 100)}%` : "—"}
+                  </span>
+                </>
               )}
             </div>
           </div>
         </div>
 
         {/* Scrollable Body */}
-        <div className="flex-1 overflow-y-auto scroll-slim p-5 space-y-5">
+        <div className="flex-1 overflow-y-auto scroll-slim p-3.5 sm:p-5 space-y-4 sm:space-y-5">
           {step === "inputs" ? (
             /* =================== STEP 1: USER INPUTS =================== */
             <div className="space-y-4">
@@ -505,37 +537,45 @@ export default function FarmPlannerModal({
 
               {/* Input 3 & 4: Last Crop & Planting Start Date */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="rounded-2xl bg-[#111920] border border-white/[0.08] p-4 space-y-2">
-                  <label className="block text-xs font-bold text-[#F2F7F4] uppercase tracking-wider flex items-center gap-1.5">
-                    <Wheat className="w-3.5 h-3.5 text-[#A3E4B7]" />
-                    {t("input.lastCrop")}
+                <div className="rounded-2xl bg-[#111920] border border-white/[0.08] p-4 space-y-2.5">
+                  <label className="block text-xs font-bold text-[#F2F7F4] uppercase tracking-wider flex items-center gap-2">
+                    <Wheat className="w-4 h-4 text-[#A3E4B7]" />
+                    <span>{t("input.lastCrop")}</span>
                   </label>
-                  <select
-                    value={activeLastCrop}
-                    onChange={(e) => onChangeInputs({ ...inputs, lastCrop: e.target.value })}
-                    className="w-full bg-[#0D1318] border border-white/15 rounded-xl px-3 py-2 text-sm text-[#F2F7F4] focus:outline-none focus:ring-2 focus:ring-[#A3E4B7]/40"
-                  >
-                    {EGYPT_CROPS.map((c) => (
-                      <option key={c.id} value={c.name}>
-                        {lang === "ar" ? c.nameAr : c.nameEn} ({lang === "ar" ? c.seasonAr : c.seasonEn})
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <Sprout className="w-4 h-4 text-[#A3E4B7] absolute start-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <select
+                      value={activeLastCrop}
+                      onChange={(e) => onChangeInputs({ ...inputs, lastCrop: e.target.value })}
+                      className="w-full bg-[#0D1318] border border-white/15 rounded-xl ps-9 pe-8 py-2.5 text-sm text-[#F2F7F4] focus:outline-none focus:ring-2 focus:ring-[#A3E4B7]/40"
+                    >
+                      {EGYPT_CROPS.map((c) => (
+                        <option key={c.id} value={c.name} className="bg-[#0D1318] text-white">
+                          {lang === "ar" ? c.nameAr : c.nameEn} ({lang === "ar" ? c.seasonAr : c.seasonEn})
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="w-4 h-4 text-[#8A9B93] absolute end-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
                   <p className="text-[11px] text-[#8A9B93]">
                     {t("input.lastCropTip")}
                   </p>
                 </div>
 
-                <div className="rounded-2xl bg-[#111920] border border-white/[0.08] p-4 space-y-2">
-                  <label className="block text-xs font-bold text-[#F2F7F4] uppercase tracking-wider">
-                    {t("input.plantingDate")}
+                <div className="rounded-2xl bg-[#111920] border border-white/[0.08] p-4 space-y-2.5">
+                  <label className="block text-xs font-bold text-[#F2F7F4] uppercase tracking-wider flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-[#A3E4B7]" />
+                    <span>{t("input.plantingDate")}</span>
                   </label>
-                  <input
-                    type="date"
-                    value={activeStartDate}
-                    onChange={(e) => onChangeInputs({ ...inputs, plantingStartDate: e.target.value })}
-                    className="w-full bg-[#0D1318] border border-white/15 rounded-xl px-3 py-2 text-sm text-[#F2F7F4] focus:outline-none focus:ring-2 focus:ring-[#A3E4B7]/40"
-                  />
+                  <div className="relative">
+                    <CalendarDays className="w-4 h-4 text-[#A3E4B7] absolute start-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      type="date"
+                      value={activeStartDate}
+                      onChange={(e) => onChangeInputs({ ...inputs, plantingStartDate: e.target.value })}
+                      className="w-full bg-[#0D1318] border border-white/15 rounded-xl ps-9 pe-3 py-2.5 text-sm text-[#F2F7F4] focus:outline-none focus:ring-2 focus:ring-[#A3E4B7]/40"
+                    />
+                  </div>
                   <p className="text-[11px] text-[#A3E4B7]">
                     {t("input.targetWindow")}
                   </p>
@@ -544,30 +584,36 @@ export default function FarmPlannerModal({
 
               {/* Input 5: Irrigation Method */}
               <div className="rounded-2xl bg-[#111920] border border-white/[0.08] p-4 space-y-2.5">
-                <label className="block text-xs font-bold text-[#F2F7F4] uppercase tracking-wider">
-                  {t("input.irrigation")}
+                <label className="block text-xs font-bold text-[#F2F7F4] uppercase tracking-wider flex items-center gap-2">
+                  <Waves className="w-4 h-4 text-cyan-400" />
+                  <span>{t("input.irrigation")}</span>
                 </label>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                   {(["Surface Irrigation", "Drip", "Sprinkler"] as const).map((method) => {
                     const active = activeIrrigation === method;
                     const efficiency = method === "Surface Irrigation" ? "55%" : method === "Drip" ? "88%" : "75%";
                     const label = method === "Surface Irrigation" ? t("input.surface") : method === "Drip" ? t("input.drip") : t("input.sprinkler");
+                    const IconComponent = method === "Surface Irrigation" ? Waves : method === "Drip" ? Droplets : CloudRain;
+                    const iconColor = method === "Surface Irrigation" ? "text-blue-400" : method === "Drip" ? "text-emerald-400" : "text-sky-400";
                     return (
                       <button
                         key={method}
                         type="button"
                         onClick={() => onChangeInputs({ ...inputs, irrigationMethod: method })}
-                        className={`p-3 rounded-xl border text-left transition ${
+                        className={`p-3.5 rounded-xl border text-left transition flex flex-col justify-between ${
                           active
-                            ? "bg-[#A3E4B7]/15 border-[#A3E4B7] text-white"
-                            : "bg-[#0D1318] border-white/10 text-[#9DB0A7] hover:border-white/20"
+                            ? "bg-[#A3E4B7]/15 border-[#A3E4B7] text-white shadow-md shadow-[#A3E4B7]/10"
+                            : "bg-[#0D1318] border-white/10 text-[#9DB0A7] hover:border-white/20 hover:bg-[#121A21]"
                         }`}
                       >
-                        <div className="text-xs font-bold flex items-center justify-between">
-                          <span>{label}</span>
-                          {active && <CheckCircle2 className="w-3.5 h-3.5 text-[#A3E4B7]" />}
+                        <div className="flex items-center justify-between w-full mb-2">
+                          <div className={`p-2 rounded-lg ${active ? "bg-[#A3E4B7]/20" : "bg-white/5"} ${iconColor}`}>
+                            <IconComponent className="w-4 h-4" />
+                          </div>
+                          {active && <CheckCircle2 className="w-4 h-4 text-[#A3E4B7]" />}
                         </div>
-                        <div className="text-[10px] text-[#8A9B93] mt-0.5">{t("input.efficiency")}: {efficiency}</div>
+                        <div className="text-xs font-bold text-white">{label}</div>
+                        <div className="text-[10px] text-[#8A9B93] mt-1">{t("input.efficiency")}: <span className="font-semibold text-[#A3E4B7]">{efficiency}</span></div>
                       </button>
                     );
                   })}
@@ -576,31 +622,36 @@ export default function FarmPlannerModal({
 
               {/* Input 6: Water Availability */}
               <div className="rounded-2xl bg-[#111920] border border-white/[0.08] p-4 space-y-2.5">
-                <label className="block text-xs font-bold text-[#F2F7F4] uppercase tracking-wider flex items-center gap-1.5">
-                  <Droplets className="w-3.5 h-3.5 text-sky-400" />
-                  {t("input.waterAvail")}
+                <label className="block text-xs font-bold text-[#F2F7F4] uppercase tracking-wider flex items-center gap-2">
+                  <Droplets className="w-4 h-4 text-sky-400" />
+                  <span>{t("input.waterAvail")}</span>
                 </label>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                   {(["Limited", "Moderate", "Abundant"] as const).map((avail) => {
                     const active = activeWaterAvail === avail;
                     const label = avail === "Limited" ? t("input.limited") : avail === "Moderate" ? t("input.moderate") : t("input.abundant");
                     const note = avail === "Limited" ? t("input.limitedTip") : avail === "Moderate" ? t("input.moderateTip") : t("input.abundantTip");
+                    const IconComponent = avail === "Limited" ? AlertTriangle : avail === "Moderate" ? Droplets : Waves;
+                    const iconColor = avail === "Limited" ? "text-amber-400" : avail === "Moderate" ? "text-sky-400" : "text-emerald-400";
                     return (
                       <button
                         key={avail}
                         type="button"
                         onClick={() => onChangeInputs({ ...inputs, waterAvailability: avail })}
-                        className={`p-3 rounded-xl border text-left transition ${
+                        className={`p-3.5 rounded-xl border text-left transition flex flex-col justify-between ${
                           active
-                            ? "bg-sky-500/15 border-sky-400 text-white"
-                            : "bg-[#0D1318] border-white/10 text-[#9DB0A7] hover:border-white/20"
+                            ? "bg-sky-500/15 border-sky-400 text-white shadow-md shadow-sky-500/10"
+                            : "bg-[#0D1318] border-white/10 text-[#9DB0A7] hover:border-white/20 hover:bg-[#121A21]"
                         }`}
                       >
-                        <div className="text-xs font-bold flex items-center justify-between">
-                          <span>{label}</span>
-                          {active && <CheckCircle2 className="w-3.5 h-3.5 text-sky-400" />}
+                        <div className="flex items-center justify-between w-full mb-2">
+                          <div className={`p-2 rounded-lg ${active ? "bg-sky-500/20" : "bg-white/5"} ${iconColor}`}>
+                            <IconComponent className="w-4 h-4" />
+                          </div>
+                          {active && <CheckCircle2 className="w-4 h-4 text-sky-400" />}
                         </div>
-                        <div className="text-[10px] text-[#8A9B93] mt-0.5">{note}</div>
+                        <div className="text-xs font-bold text-white">{label}</div>
+                        <div className="text-[10px] text-[#8A9B93] mt-1 leading-snug">{note}</div>
                       </button>
                     );
                   })}
@@ -609,8 +660,9 @@ export default function FarmPlannerModal({
 
               {/* Input 7: Plan Objective */}
               <div className="rounded-2xl bg-[#111920] border border-white/[0.08] p-4 space-y-2.5">
-                <label className="block text-xs font-bold text-[#F2F7F4] uppercase tracking-wider">
-                  {t("input.objective")}
+                <label className="block text-xs font-bold text-[#F2F7F4] uppercase tracking-wider flex items-center gap-2">
+                  <Target className="w-4 h-4 text-[#A3E4B7]" />
+                  <span>{t("input.objective")}</span>
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   <button
@@ -618,12 +670,17 @@ export default function FarmPlannerModal({
                     onClick={() => onChangeInputs({ ...inputs, planObjective: "Save Water", priority: "water-saving" })}
                     className={`p-4 rounded-xl border text-left transition ${
                       activeObjective === "Save Water"
-                        ? "bg-[#A3E4B7]/15 border-[#A3E4B7] text-white"
-                        : "bg-[#0D1318] border-white/10 text-[#9DB0A7] hover:border-white/20"
+                        ? "bg-[#A3E4B7]/15 border-[#A3E4B7] text-white shadow-md shadow-[#A3E4B7]/10"
+                        : "bg-[#0D1318] border-white/10 text-[#9DB0A7] hover:border-white/20 hover:bg-[#121A21]"
                     }`}
                   >
-                    <div className="flex items-center gap-2 font-bold text-sm text-white mb-1">
-                      <Droplets className="w-4 h-4 text-sky-400" />
+                    <div className="flex items-center justify-between mb-2">
+                      <div className={`p-2.5 rounded-xl ${activeObjective === "Save Water" ? "bg-sky-500/25 text-sky-300" : "bg-white/5 text-sky-400"}`}>
+                        <Droplets className="w-5 h-5" />
+                      </div>
+                      {activeObjective === "Save Water" && <CheckCircle2 className="w-4 h-4 text-[#A3E4B7]" />}
+                    </div>
+                    <div className="font-bold text-sm text-white mb-1">
                       {t("input.saveWater")}
                     </div>
                     <p className="text-xs text-[#8A9B93] leading-snug">
@@ -636,12 +693,17 @@ export default function FarmPlannerModal({
                     onClick={() => onChangeInputs({ ...inputs, planObjective: "Improve Soil Health", priority: "sustainability" })}
                     className={`p-4 rounded-xl border text-left transition ${
                       activeObjective === "Improve Soil Health"
-                        ? "bg-[#A3E4B7]/15 border-[#A3E4B7] text-white"
-                        : "bg-[#0D1318] border-white/10 text-[#9DB0A7] hover:border-white/20"
+                        ? "bg-[#A3E4B7]/15 border-[#A3E4B7] text-white shadow-md shadow-[#A3E4B7]/10"
+                        : "bg-[#0D1318] border-white/10 text-[#9DB0A7] hover:border-white/20 hover:bg-[#121A21]"
                     }`}
                   >
-                    <div className="flex items-center gap-2 font-bold text-sm text-white mb-1">
-                      <Leaf className="w-4 h-4 text-[#A3E4B7]" />
+                    <div className="flex items-center justify-between mb-2">
+                      <div className={`p-2.5 rounded-xl ${activeObjective === "Improve Soil Health" ? "bg-[#A3E4B7]/25 text-[#A3E4B7]" : "bg-white/5 text-[#A3E4B7]"}`}>
+                        <Leaf className="w-5 h-5" />
+                      </div>
+                      {activeObjective === "Improve Soil Health" && <CheckCircle2 className="w-4 h-4 text-[#A3E4B7]" />}
+                    </div>
+                    <div className="font-bold text-sm text-white mb-1">
                       {t("input.improveSoil")}
                     </div>
                     <p className="text-xs text-[#8A9B93] leading-snug">
@@ -1207,25 +1269,25 @@ export default function FarmPlannerModal({
         </div>
 
         {/* Sticky Footer Action Bar */}
-        <div className="shrink-0 px-5 py-3.5 border-t border-white/[0.08] bg-[#0D1318] flex flex-wrap items-center justify-between gap-2">
+        <div className="shrink-0 px-3.5 sm:px-5 py-2.5 sm:py-3.5 border-t border-white/[0.08] bg-[#0D1318] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
           {step === "inputs" ? (
             <>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-between sm:justify-start gap-2 order-2 sm:order-1">
                 <button
                   type="button"
                   onClick={onRedrawField}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-white/10 bg-[#121A21] hover:bg-[#19242E] text-xs font-semibold text-[#C7D4CD] transition"
+                  className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-full border border-white/10 bg-[#121A21] hover:bg-[#19242E] text-xs font-semibold text-[#C7D4CD] transition"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
-                  {t("modal.redraw")}
+                  <span>{t("modal.redraw")}</span>
                 </button>
                 <button
                   type="button"
                   onClick={onMinimizeToMap}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-white/10 bg-[#121A21] hover:bg-[#19242E] text-xs font-semibold text-[#C7D4CD] transition"
+                  className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-full border border-white/10 bg-[#121A21] hover:bg-[#19242E] text-xs font-semibold text-[#C7D4CD] transition"
                 >
                   <Eye className="w-3.5 h-3.5" />
-                  {t("modal.viewMap")}
+                  <span>{t("modal.viewMap")}</span>
                 </button>
               </div>
 
@@ -1233,7 +1295,7 @@ export default function FarmPlannerModal({
                 type="button"
                 disabled={isEvaluating}
                 onClick={handleCalculateAndProceed}
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white hover:bg-[#A3E4B7] text-[#070B0E] text-xs sm:text-sm font-bold shadow-lg transition disabled:opacity-50"
+                className="order-1 sm:order-2 inline-flex items-center justify-center gap-2 px-6 py-3 sm:py-2.5 rounded-full bg-white hover:bg-[#A3E4B7] text-[#070B0E] text-xs sm:text-sm font-bold shadow-lg transition disabled:opacity-50"
               >
                 {isEvaluating ? (
                   <>
@@ -1250,36 +1312,36 @@ export default function FarmPlannerModal({
             </>
           ) : (
             <>
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center gap-1.5 order-2 sm:order-1">
                 <button
                   type="button"
                   onClick={onBackToInputs}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-white/10 bg-[#121A21] hover:bg-[#19242E] text-xs font-semibold text-[#C7D4CD] transition"
+                  className="inline-flex items-center gap-1 px-3 py-2 rounded-full border border-white/10 bg-[#121A21] hover:bg-[#19242E] text-xs font-semibold text-[#C7D4CD] transition"
                 >
                   <ArrowLeft className={`w-3.5 h-3.5 ${dir === "rtl" ? "rotate-180" : ""}`} />
-                  {t("modal.back")}
+                  <span>{t("modal.back")}</span>
                 </button>
                 <button
                   type="button"
                   onClick={onRedrawField}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-white/10 bg-[#121A21] hover:bg-[#19242E] text-xs font-semibold text-[#C7D4CD] transition"
+                  className="inline-flex items-center gap-1 px-3 py-2 rounded-full border border-white/10 bg-[#121A21] hover:bg-[#19242E] text-xs font-semibold text-[#C7D4CD] transition"
                 >
                   <PenTool className="w-3.5 h-3.5" />
-                  {t("modal.markAnother")}
+                  <span>{t("modal.markAnother")}</span>
                 </button>
                 <button
                   type="button"
                   onClick={onExportGeoJSON}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-white/10 bg-[#121A21] hover:bg-[#19242E] text-xs font-semibold text-[#C7D4CD] transition"
+                  className="inline-flex items-center gap-1 px-3 py-2 rounded-full border border-white/10 bg-[#121A21] hover:bg-[#19242E] text-xs font-semibold text-[#C7D4CD] transition"
                 >
                   <Download className="w-3.5 h-3.5 text-[#A3E4B7]" />
-                  {t("modal.exportGeo")}
+                  <span>{t("modal.exportGeo")}</span>
                 </button>
               </div>
               <button
                 type="button"
                 onClick={onMinimizeToMap}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white hover:bg-[#A3E4B7] text-[#070B0E] text-xs font-bold shadow-lg transition"
+                className="order-1 sm:order-2 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-white hover:bg-[#A3E4B7] text-[#070B0E] text-xs font-bold shadow-lg transition"
               >
                 <Eye className="w-4 h-4" />
                 {t("modal.viewOnGlobe")}

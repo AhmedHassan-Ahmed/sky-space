@@ -527,24 +527,24 @@ export default function AgriDashboard() {
 
   return (
     <div className="relative h-dvh w-screen flex flex-col bg-[#070B0E] text-[#F2F7F4] overflow-hidden">
-      {/* Top Navigation Bar (Guided 3-Step Flow Header — No Sidebar) */}
+      {/* Top Navigation Bar (Guided 3-Step Flow Header — Responsive Mobile + Desktop) */}
       <header
-        className={`shrink-0 bg-[#0B1015]/95 backdrop-blur-xl border-white/10 px-4 flex items-center justify-between gap-3 z-20 transition-all duration-500 ease-out ${
+        className={`shrink-0 bg-[#0B1015]/95 backdrop-blur-xl border-white/10 px-2.5 sm:px-4 flex items-center justify-between gap-1.5 sm:gap-3 z-20 transition-all duration-500 ease-out ${
           isWelcomeOpen
             ? "-translate-y-full opacity-0 pointer-events-none h-0 border-0 overflow-hidden"
-            : "translate-y-0 opacity-100 h-14 border-b"
+            : "translate-y-0 opacity-100 h-13 sm:h-14 border-b"
         }`}
       >
-        {/* Left: Brand + Home */}
-        <div className="flex items-center gap-2 shrink-0">
-          <div className="relative w-9 h-9 flex items-center justify-center">
+        {/* Left: Brand + Home + Tour + Language */}
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          <div className="relative w-7 h-7 sm:w-9 sm:h-9 flex items-center justify-center shrink-0">
             <img
               src="/logo.svg"
               alt="Sky Space Logo"
               className="w-full h-full object-contain drop-shadow-[0_0_8px_rgba(163,228,183,0.35)]"
             />
           </div>
-          <div className="hidden sm:block">
+          <div className="hidden md:block">
             <h1 className="text-sm font-bold text-[#F2F7F4] leading-tight tracking-wide">
               {t("nav.brand")}
             </h1>
@@ -556,7 +556,7 @@ export default function AgriDashboard() {
             type="button"
             onClick={handleReturnToWelcome}
             title={t("nav.home")}
-            className="ml-1 inline-flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-full border border-white/10 bg-[#121A21] hover:bg-[#19242E] text-[#F2F7F4] text-xs font-medium transition"
+            className="inline-flex items-center justify-center p-1.5 sm:px-3 sm:py-1 rounded-full border border-white/10 bg-[#121A21] hover:bg-[#19242E] text-[#F2F7F4] text-xs font-medium transition"
           >
             <Home className="w-3.5 h-3.5 text-[#A3E4B7]" />
             <span className="hidden xl:inline">{t("nav.home")}</span>
@@ -565,7 +565,7 @@ export default function AgriDashboard() {
             type="button"
             onClick={() => setIsTutorialOpen((prev) => !prev)}
             title="Interactive Guided Tour"
-            className={`inline-flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-full border text-xs font-semibold transition ${
+            className={`inline-flex items-center justify-center p-1.5 sm:px-3 sm:py-1 rounded-full border text-xs font-semibold transition ${
               isTutorialOpen
                 ? "bg-[#A3E4B7] text-[#070B0E] border-[#A3E4B7]"
                 : "border-[#A3E4B7]/35 bg-[#A3E4B7]/10 hover:bg-[#A3E4B7]/20 text-[#A3E4B7]"
@@ -575,18 +575,18 @@ export default function AgriDashboard() {
             <span className="hidden sm:inline">{t("nav.tour")}</span>
           </button>
           {/* Language Toggle */}
-          <div className="inline-flex items-center rounded-full border border-white/10 bg-[#121A21] overflow-hidden text-[10px] font-bold shrink-0">
+          <div className="inline-flex items-center rounded-full border border-white/10 bg-[#121A21] overflow-hidden text-[9px] sm:text-[10px] font-bold shrink-0">
             <button
               type="button"
               onClick={() => setLang("ar")}
-              className={`px-2.5 py-1 transition ${lang === "ar" ? "bg-[#A3E4B7] text-[#070B0E]" : "text-[#8A9B93] hover:text-[#F2F7F4]"}`}
+              className={`px-2 py-0.5 sm:px-2.5 sm:py-1 transition ${lang === "ar" ? "bg-[#A3E4B7] text-[#070B0E]" : "text-[#8A9B93] hover:text-[#F2F7F4]"}`}
             >
               AR
             </button>
             <button
               type="button"
               onClick={() => setLang("en")}
-              className={`px-2.5 py-1 transition ${lang === "en" ? "bg-[#A3E4B7] text-[#070B0E]" : "text-[#8A9B93] hover:text-[#F2F7F4]"}`}
+              className={`px-2 py-0.5 sm:px-2.5 sm:py-1 transition ${lang === "en" ? "bg-[#A3E4B7] text-[#070B0E]" : "text-[#8A9B93] hover:text-[#F2F7F4]"}`}
             >
               EN
             </button>
@@ -648,22 +648,22 @@ export default function AgriDashboard() {
         <form
           data-tour="location-search"
           onSubmit={handleSearchLocation}
-          className="flex-1 min-w-[110px] max-w-xs sm:max-w-sm flex items-center gap-1 sm:gap-1.5"
+          className="flex-1 min-w-[70px] max-w-[130px] sm:max-w-xs md:max-w-sm flex items-center gap-1 sm:gap-1.5"
         >
           <div className="relative flex-1">
-            <Search className="w-3.5 h-3.5 text-[#8A9B93] absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#8A9B93] absolute start-2 sm:start-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t("nav.search")}
-              className="w-full pl-8 pr-2.5 py-1.5 text-xs bg-[#121A21] border border-white/10 text-[#F2F7F4] placeholder:text-[#64766E] rounded-full focus:bg-[#162028] focus:outline-none focus:ring-2 focus:ring-[#A3E4B7]/40 transition"
+              className="w-full ps-6 sm:ps-8 pe-2 py-1 sm:py-1.5 text-[11px] sm:text-xs bg-[#121A21] border border-white/10 text-[#F2F7F4] placeholder:text-[#64766E] rounded-full focus:bg-[#162028] focus:outline-none focus:ring-2 focus:ring-[#A3E4B7]/40 transition"
             />
           </div>
           <button
             type="submit"
             disabled={isSearching}
-            className="px-2.5 sm:px-3 py-1.5 text-xs font-semibold bg-[#162028] hover:bg-[#1E2B35] border border-white/10 text-[#F2F7F4] rounded-full transition disabled:opacity-50"
+            className="hidden sm:inline-block px-2.5 sm:px-3 py-1.5 text-xs font-semibold bg-[#162028] hover:bg-[#1E2B35] border border-white/10 text-[#F2F7F4] rounded-full transition disabled:opacity-50"
           >
             {isSearching ? "..." : t("nav.go")}
           </button>
@@ -671,14 +671,14 @@ export default function AgriDashboard() {
             type="button"
             onClick={handleLocateMe}
             title="Jump to my current location"
-            className="p-1.5 rounded-full border border-white/10 bg-[#121A21] hover:bg-[#19242E] text-[#A3E4B7] transition"
+            className="p-1 sm:p-1.5 rounded-full border border-white/10 bg-[#121A21] hover:bg-[#19242E] text-[#A3E4B7] transition shrink-0"
           >
-            <LocateFixed className="w-4 h-4" />
+            <LocateFixed className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </form>
 
         {/* Primary Action: Mark My Field & Account */}
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           {searchMessage && (
             <span className="text-[11px] text-rose-400 hidden xl:inline">
               {searchMessage}
@@ -688,7 +688,7 @@ export default function AgriDashboard() {
             data-tour="mark-field-btn"
             type="button"
             onClick={isDrawing ? handleCancelDrawing : handleStartDrawing}
-            className={`inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-full text-xs font-bold shadow-sm transition ${
+            className={`inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-4 py-1.5 rounded-full text-xs font-bold shadow-sm transition ${
               isDrawing
                 ? "bg-amber-400 hover:bg-amber-300 text-[#070B0E]"
                 : "bg-white hover:bg-[#A3E4B7] text-[#070B0E]"
@@ -709,16 +709,16 @@ export default function AgriDashboard() {
 
           {/* User Account / Auth Button */}
           {user ? (
-            <div className="flex items-center gap-1 bg-[#121A21] border border-white/10 rounded-full px-2.5 sm:px-3 py-1">
+            <div className="flex items-center gap-1 bg-[#121A21] border border-white/10 rounded-full px-2 sm:px-3 py-1">
               <span className="text-xs font-semibold text-[#A3E4B7] flex items-center gap-1">
                 <User className="w-3.5 h-3.5" />
-                <span className="max-w-[70px] sm:max-w-[110px] truncate">{user.name.split(" ")[0]}</span>
+                <span className="max-w-[45px] sm:max-w-[110px] truncate">{user.name.split(" ")[0]}</span>
               </span>
               <button
                 type="button"
                 onClick={handleLogout}
                 title={t("nav.signOut")}
-                className="text-[#8A9B93] hover:text-rose-400 transition ml-0.5 p-0.5"
+                className="text-[#8A9B93] hover:text-rose-400 transition p-0.5"
               >
                 <LogOut className="w-3 h-3" />
               </button>
@@ -727,7 +727,7 @@ export default function AgriDashboard() {
             <button
               type="button"
               onClick={() => setIsAuthModalOpen(true)}
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-white/15 bg-[#121A21] hover:bg-[#19242E] text-xs font-semibold text-[#F2F7F4] transition shadow-sm"
+              className="inline-flex items-center justify-center p-1.5 sm:px-3 sm:py-1.5 rounded-full border border-white/15 bg-[#121A21] hover:bg-[#19242E] text-xs font-semibold text-[#F2F7F4] transition shadow-sm"
             >
               <User className="w-3.5 h-3.5 text-[#A3E4B7]" />
               <span className="hidden sm:inline">{t("nav.signIn")}</span>
@@ -845,20 +845,20 @@ export default function AgriDashboard() {
           </button>
         </div>
 
-        {/* Floating Bottom Guidance Bar — Stage 2 (Bottom-Left away from Quick Practice) */}
+        {/* Floating Bottom Guidance Bar — Stage 2 (Responsive Mobile + Desktop) */}
         {!isWelcomeOpen && !isDrawing && !selectedField && !isTutorialOpen && (
-          <div className="absolute bottom-4 left-4 z-[450] w-[calc(100%-2rem)] max-w-lg px-4 py-3 rounded-2xl bg-[#0D1318]/92 backdrop-blur-xl border border-white/10 shadow-2xl flex flex-wrap items-center justify-between gap-2.5">
-            <div className="min-w-[180px] flex-1">
+          <div className="absolute bottom-3 sm:bottom-4 left-3 right-3 sm:right-auto sm:left-4 z-[450] w-auto sm:w-[calc(100%-2rem)] sm:max-w-lg px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-2xl bg-[#0D1318]/92 backdrop-blur-xl border border-white/10 shadow-2xl flex flex-wrap items-center justify-between gap-2.5">
+            <div className="min-w-[150px] flex-1">
               <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#A3E4B7]">
                 {t("dash.step1Title")}
               </div>
-              <p className="text-xs text-[#C7D4CD] mt-0.5">
+              <p className="text-xs text-[#C7D4CD] mt-0.5 leading-snug">
                 {viewMode === "globe"
                   ? t("dash.step1DescGlobe")
                   : t("dash.step1DescMap")}
               </p>
             </div>
-            <div className="flex flex-wrap items-center gap-1.5 shrink-0">
+            <div className="flex items-center gap-1.5 shrink-0 w-full sm:w-auto justify-end">
               <button
                 type="button"
                 onClick={handleQuickDemoField}
@@ -879,13 +879,13 @@ export default function AgriDashboard() {
           </div>
         )}
 
-        {/* Floating Bottom Field Bar — Bottom-Left away from Quick Practice */}
+        {/* Floating Bottom Field Bar — Responsive Mobile + Desktop */}
         {!isWelcomeOpen &&
           !isDrawing &&
           selectedField &&
           !isPlannerOpen &&
           !isTutorialOpen && (
-            <div className="absolute bottom-4 left-4 z-[450] w-[calc(100%-2rem)] max-w-md px-4 py-3 rounded-2xl bg-[#0D1318]/92 backdrop-blur-xl border border-[#A3E4B7]/35 shadow-2xl flex flex-wrap items-center justify-between gap-3">
+            <div className="absolute bottom-3 sm:bottom-4 left-3 right-3 sm:right-auto sm:left-4 z-[450] w-auto sm:w-[calc(100%-2rem)] sm:max-w-md px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-2xl bg-[#0D1318]/92 backdrop-blur-xl border border-[#A3E4B7]/35 shadow-2xl flex flex-wrap items-center justify-between gap-2.5">
               <div>
                 <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#A3E4B7]">
                   {t("dash.markedReady")}
@@ -897,11 +897,11 @@ export default function AgriDashboard() {
                   </span>
                 </div>
               </div>
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end">
                 <button
                   type="button"
                   onClick={handleStartDrawing}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-white/10 bg-[#121A21] hover:bg-[#19242E] text-xs font-semibold text-[#C7D4CD] transition"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-full border border-white/10 bg-[#121A21] hover:bg-[#19242E] text-xs font-semibold text-[#C7D4CD] transition"
                 >
                   <PenTool className="w-3.5 h-3.5" />
                   {t("dash.markNew")}
@@ -909,7 +909,7 @@ export default function AgriDashboard() {
                 <button
                   type="button"
                   onClick={() => setIsPlannerOpen(true)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white hover:bg-[#A3E4B7] text-[#070B0E] text-xs font-bold transition"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-white hover:bg-[#A3E4B7] text-[#070B0E] text-xs font-bold transition"
                 >
                   {plannerStep === "plans"
                     ? t("dash.openCropPlan")

@@ -9,6 +9,7 @@ import {
   Droplets,
   Info,
   MapPin,
+  PenLine,
   Satellite,
   Sprout,
   Sun,
@@ -65,7 +66,8 @@ function FieldSidebar({
         <div className="p-4 border-b border-white/10 space-y-3">
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
-              <label className="block text-[10px] font-semibold uppercase tracking-widest text-[#8A9B93] mb-0.5">
+              <label className="block text-[10px] font-semibold uppercase tracking-widest text-[#8A9B93] mb-0.5 flex items-center gap-1">
+                <PenLine className="w-3 h-3 text-[#A3E4B7]" />
                 Selected Land Parcel
               </label>
               <input
@@ -80,7 +82,8 @@ function FieldSidebar({
             </div>
 
             <div className="shrink-0">
-              <label className="block text-[10px] font-semibold uppercase tracking-widest text-[#8A9B93] mb-0.5">
+              <label className="block text-[10px] font-semibold uppercase tracking-widest text-[#8A9B93] mb-0.5 flex items-center gap-1">
+                <Sprout className="w-3 h-3 text-[#A3E4B7]" />
                 Crop
               </label>
               <select
