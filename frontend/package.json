@@ -5,12 +5,17 @@
   "scripts": {
     "dev": "next dev -H 0.0.0.0",
     "build": "next build",
+    "build:cap": "CAPACITOR_BUILD=true NEXT_PUBLIC_API_URL=https://sky-space-omega.vercel.app/api next build",
+    "cap:sync": "npx cap sync android",
     "dev:webpack": "next dev --webpack -H 0.0.0.0",
     "build:webpack": "next build --webpack",
     "start": "next start -H 0.0.0.0",
     "lint": "eslint"
   },
   "dependencies": {
+    "@capacitor/android": "^8.6.2",
+    "@capacitor/cli": "^8.6.2",
+    "@capacitor/core": "^8.6.2",
     "@turf/area": "^7.4.0",
     "@turf/centroid": "^7.4.0",
     "@turf/helpers": "^7.4.0",

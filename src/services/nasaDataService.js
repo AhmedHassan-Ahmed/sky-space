@@ -360,13 +360,18 @@ function isFresh(entry) {
   const maxAge = allObserved(entry.data) ? CACHE_MAX_AGE : PARTIAL_CACHE_MAX_AGE;
   return Date.now() - entry.savedAt <= maxAge;
 }
+function hasBrowserStorage() {
+  return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
+}
+
 function readCache(lat, lon, year) {
   const key = cacheKey(lat, lon, year);
   const memory = memoryCache.get(key);
   if (isFresh(memory)) return structuredClone(memory.data);
+  if (!hasBrowserStorage()) return null;
   try {
     const cached = JSON.parse(
-      globalThis.localStorage?.getItem(key) ?? "null",
+      window.localStorage.getItem(key) ?? "null",
     );
     if (cached?.version !== 3 || !isFresh(cached)) return null;
     validateSoil(cached.data.soil);
@@ -386,8 +391,9 @@ function writeCache(lat, lon, year, data) {
   memoryCache.set(key, entry);
   if (memoryCache.size > 500)
     memoryCache.delete(memoryCache.keys().next().value);
+  if (!hasBrowserStorage()) return;
   try {
-    globalThis.localStorage?.setItem(key, JSON.stringify(entry));
+    window.localStorage.setItem(key, JSON.stringify(entry));
   } catch {
     /* Private mode / full storage: memory cache and fallback still work. */
   }

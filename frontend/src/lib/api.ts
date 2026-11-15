@@ -6,7 +6,15 @@ export function getApiBaseUrl(): string {
     return process.env.NEXT_PUBLIC_API_URL.replace(/\/+$/, "");
   }
 
-  // 2. Server-side runtime (Node.js / Vercel Serverless Function):
+  // 2. Running in Capacitor native app (or local file/capacitor scheme)
+  if (
+    typeof window !== "undefined" &&
+    ((window as any).Capacitor || window.location.origin.startsWith("capacitor://") || window.location.origin === "file://")
+  ) {
+    return "https://sky-space-omega.vercel.app/api";
+  }
+
+  // 3. Server-side runtime (Node.js / Vercel Serverless Function):
   // Reads the bound service variable BACKEND_URL injected by Vercel
   if (typeof window === "undefined") {
     if (process.env.BACKEND_URL) {
@@ -15,7 +23,7 @@ export function getApiBaseUrl(): string {
     return "http://localhost:5000/api";
   }
 
-  // 3. Client-side browser:
+  // 4. Client-side browser:
   // Relative URL "/api" routes directly through Vercel's top-level rewrite rule
   // or Next.js development rewrites to the backend service.
   return "/api";

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Sky Space</string>
+    <string name="title_activity_main">Sky Space</string>
+    <string name="package_name">com.skyspace.app</string>
+    <string name="custom_url_scheme">com.skyspace.app</string>
+</resources>
