@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { Lock, Mail, User as UserIcon, X, Loader2, CheckCircle2 } from "lucide-react";
+import { Lock, Mail, User as UserIcon, X, Loader2 } from "lucide-react";
 import { api, setToken, type UserProfile } from "@/lib/api";
+import { useLanguage } from "@/lib/LanguageContext";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ export default function AuthModal({
   onAuthSuccess,
   initialMode = "login",
 }: AuthModalProps) {
+  const { lang, t, dir } = useLanguage();
   const [mode, setMode] = useState<"login" | "register">(initialMode);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -43,7 +45,7 @@ export default function AuthModal({
       }
       onClose();
     } catch (err: any) {
-      setError(err.message || "Authentication failed. Please check your details.");
+      setError(err.message || (lang === "ar" ? "فشل تسجيل الدخول. يرجى التحقق من بياناتك." : "Authentication failed. Please check your details."));
     } finally {
       setLoading(false);
     }
@@ -53,13 +55,14 @@ export default function AuthModal({
     <div
       role="dialog"
       aria-modal="true"
+      dir={dir}
       className="fixed inset-0 z-[500] flex items-center justify-center p-4 bg-[#070B0E]/80 backdrop-blur-md animate-fade-in"
     >
       <div className="w-full max-w-md max-h-[92dvh] overflow-y-auto scroll-slim rounded-3xl bg-[#0B1015] border border-white/10 shadow-2xl text-[#F2F7F4] p-5 sm:p-6 relative">
         <button
           onClick={onClose}
           type="button"
-          className="absolute top-4 right-4 p-2 text-[#8A9B93] hover:text-white rounded-full hover:bg-white/10 transition"
+          className={`absolute top-4 ${dir === "rtl" ? "left-4" : "right-4"} p-2 text-[#8A9B93] hover:text-white rounded-full hover:bg-white/10 transition`}
         >
           <X className="w-5 h-5" />
         </button>
@@ -73,12 +76,10 @@ export default function AuthModal({
             />
           </div>
           <h2 className="text-xl font-bold text-white">
-            {mode === "login" ? "Sky Space Sign In" : "Join Sky Space"}
+            {mode === "login" ? t("auth.signInTitle") : t("auth.joinTitle")}
           </h2>
           <p className="text-xs text-[#8A9B93] mt-1">
-            {mode === "login"
-              ? "Access your saved field records & rotation history"
-              : "Register to save your farm parameters and crop plans"}
+            {mode === "login" ? t("auth.signInSub") : t("auth.joinSub")}
           </p>
         </div>
 
@@ -96,7 +97,7 @@ export default function AuthModal({
                 : "text-[#8A9B93] hover:text-white"
             }`}
           >
-            Sign In
+            {t("auth.signInBtn")}
           </button>
           <button
             type="button"
@@ -110,7 +111,7 @@ export default function AuthModal({
                 : "text-[#8A9B93] hover:text-white"
             }`}
           >
-            Register
+            {t("auth.joinBtn")}
           </button>
         </div>
 
@@ -124,17 +125,17 @@ export default function AuthModal({
           {mode === "register" && (
             <div>
               <label className="block text-xs font-semibold text-[#8A9B93] mb-1">
-                Full Name
+                {t("auth.nameLabel")}
               </label>
               <div className="relative">
-                <UserIcon className="w-4 h-4 text-[#8A9B93] absolute left-3 top-3" />
+                <UserIcon className={`w-4 h-4 text-[#8A9B93] absolute ${dir === "rtl" ? "right-3" : "left-3"} top-3`} />
                 <input
                   type="text"
-                  placeholder="e.g., Ahmed Hassan"
+                  placeholder={t("auth.namePlaceholder")}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  className="w-full bg-[#121A21] border border-white/10 rounded-xl pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#A3E4B7]/40"
+                  className={`w-full bg-[#121A21] border border-white/10 rounded-xl ${dir === "rtl" ? "pr-9 pl-3 text-right" : "pl-9 pr-3 text-left"} py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#A3E4B7]/40`}
                 />
               </div>
             </div>
@@ -142,27 +143,27 @@ export default function AuthModal({
 
           <div>
             <label className="block text-xs font-semibold text-[#8A9B93] mb-1">
-              Email Address
+              {t("auth.emailLabel")}
             </label>
             <div className="relative">
-              <Mail className="w-4 h-4 text-[#8A9B93] absolute left-3 top-3" />
+              <Mail className={`w-4 h-4 text-[#8A9B93] absolute ${dir === "rtl" ? "right-3" : "left-3"} top-3`} />
               <input
                 type="email"
                 placeholder="farmer@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full bg-[#121A21] border border-white/10 rounded-xl pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#A3E4B7]/40"
+                className={`w-full bg-[#121A21] border border-white/10 rounded-xl ${dir === "rtl" ? "pr-9 pl-3 text-right" : "pl-9 pr-3 text-left"} py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#A3E4B7]/40`}
               />
             </div>
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-[#8A9B93] mb-1">
-              Password
+              {t("auth.passwordLabel")}
             </label>
             <div className="relative">
-              <Lock className="w-4 h-4 text-[#8A9B93] absolute left-3 top-3" />
+              <Lock className={`w-4 h-4 text-[#8A9B93] absolute ${dir === "rtl" ? "right-3" : "left-3"} top-3`} />
               <input
                 type="password"
                 placeholder="••••••••"
@@ -170,7 +171,7 @@ export default function AuthModal({
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full bg-[#121A21] border border-white/10 rounded-xl pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#A3E4B7]/40"
+                className={`w-full bg-[#121A21] border border-white/10 rounded-xl ${dir === "rtl" ? "pr-9 pl-3 text-right" : "pl-9 pr-3 text-left"} py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#A3E4B7]/40`}
               />
             </div>
           </div>
@@ -183,19 +184,19 @@ export default function AuthModal({
             {loading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Please wait...</span>
+                <span>{t("common.loading")}</span>
               </>
             ) : mode === "login" ? (
-              "Sign In"
+              t("auth.signInBtn")
             ) : (
-              "Create Account"
+              t("auth.joinBtn")
             )}
           </button>
         </form>
 
         <div className="text-center mt-4">
           <p className="text-xs text-[#8A9B93]">
-            {mode === "login" ? "New to FieldShift?" : "Already registered?"}{" "}
+            {mode === "login" ? t("auth.noAccount") : t("auth.hasAccount")}{" "}
             <button
               type="button"
               onClick={() => {
@@ -204,7 +205,7 @@ export default function AuthModal({
               }}
               className="text-[#A3E4B7] font-semibold hover:underline"
             >
-              {mode === "login" ? "Register an account" : "Sign in here"}
+              {mode === "login" ? t("auth.createOne") : t("auth.signInLink")}
             </button>
           </p>
         </div>

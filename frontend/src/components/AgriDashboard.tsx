@@ -814,7 +814,7 @@ export default function AgriDashboard() {
             }`}
           >
             <Globe2 className="w-3.5 h-3.5" />
-            3D Earth
+            {t("dash.earth3d")}
           </button>
           <button
             type="button"
@@ -841,7 +841,7 @@ export default function AgriDashboard() {
             }`}
           >
             <MapIcon className="w-3.5 h-3.5" />
-            2D Map
+            {t("dash.map2d")}
           </button>
         </div>
 
@@ -850,12 +850,12 @@ export default function AgriDashboard() {
           <div className="absolute bottom-4 left-4 z-[450] w-[calc(100%-2rem)] max-w-lg px-4 py-3 rounded-2xl bg-[#0D1318]/92 backdrop-blur-xl border border-white/10 shadow-2xl flex flex-wrap items-center justify-between gap-2.5">
             <div className="min-w-[180px] flex-1">
               <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#A3E4B7]">
-                Step 1 of 3 &bull; Find &amp; Mark Your Land
+                {t("dash.step1Title")}
               </div>
               <p className="text-xs text-[#C7D4CD] mt-0.5">
                 {viewMode === "globe"
-                  ? "Find your region by search, GPS, or globe—then mark your field."
-                  : "Pan to your land parcel, then tap Mark My Field."}
+                  ? t("dash.step1DescGlobe")
+                  : t("dash.step1DescMap")}
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-1.5 shrink-0">
@@ -865,7 +865,7 @@ export default function AgriDashboard() {
                 className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-white/15 bg-[#121A21] hover:bg-[#19242E] text-xs font-semibold text-[#C7D4CD] transition"
               >
                 <Sparkles className="w-3.5 h-3.5 text-[#A3E4B7]" />
-                Demo Field
+                {t("dash.demoField")}
               </button>
               <button
                 type="button"
@@ -873,7 +873,7 @@ export default function AgriDashboard() {
                 className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white hover:bg-[#A3E4B7] text-[#070B0E] text-xs font-bold transition"
               >
                 <PenTool className="w-3.5 h-3.5" />
-                Mark My Field
+                {t("dash.markMyField")}
               </button>
             </div>
           </div>
@@ -888,7 +888,7 @@ export default function AgriDashboard() {
             <div className="absolute bottom-4 left-4 z-[450] w-[calc(100%-2rem)] max-w-md px-4 py-3 rounded-2xl bg-[#0D1318]/92 backdrop-blur-xl border border-[#A3E4B7]/35 shadow-2xl flex flex-wrap items-center justify-between gap-3">
               <div>
                 <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#A3E4B7]">
-                  Marked Field Ready
+                  {t("dash.markedReady")}
                 </div>
                 <div className="text-xs sm:text-sm font-bold text-[#F2F7F4]">
                   {selectedField.name} &bull;{" "}
@@ -904,7 +904,7 @@ export default function AgriDashboard() {
                   className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-white/10 bg-[#121A21] hover:bg-[#19242E] text-xs font-semibold text-[#C7D4CD] transition"
                 >
                   <PenTool className="w-3.5 h-3.5" />
-                  Mark New Field
+                  {t("dash.markNew")}
                 </button>
                 <button
                   type="button"
@@ -912,8 +912,8 @@ export default function AgriDashboard() {
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white hover:bg-[#A3E4B7] text-[#070B0E] text-xs font-bold transition"
                 >
                   {plannerStep === "plans"
-                    ? "Open Crop Plan"
-                    : "Open Crop Plan / Inputs"}
+                    ? t("dash.openCropPlan")
+                    : t("dash.openInputs")}
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -929,7 +929,7 @@ export default function AgriDashboard() {
               className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#0D1318]/92 backdrop-blur-xl border border-white/10 shadow-lg text-xs font-semibold text-[#F2F7F4] hover:border-[#A3E4B7]/40 transition"
             >
               <Layers className="w-3.5 h-3.5 text-[#A3E4B7]" />
-              NASA &amp; Map Layers
+              {t("dash.layersBtn")}
             </button>
 
             {showLayerPanel && (
@@ -938,7 +938,7 @@ export default function AgriDashboard() {
                 <div>
                   <div className="text-[10px] font-bold uppercase tracking-wider text-[#8A9B93] mb-1.5 flex items-center gap-1">
                     <MapIcon className="w-3 h-3" />
-                    Base Map
+                    {t("dash.baseMap")}
                   </div>
                   <div className="grid grid-cols-2 gap-1.5">
                     <button
@@ -950,7 +950,7 @@ export default function AgriDashboard() {
                           : "bg-[#121A21] text-[#8A9B93] border-white/10 hover:text-[#F2F7F4]"
                       }`}
                     >
-                      Satellite
+                      {t("dash.satellite")}
                     </button>
                     <button
                       type="button"
@@ -961,7 +961,7 @@ export default function AgriDashboard() {
                           : "bg-[#121A21] text-[#8A9B93] border-white/10 hover:text-[#F2F7F4]"
                       }`}
                     >
-                      Street Map
+                      {t("dash.street")}
                     </button>
                   </div>
                 </div>
@@ -970,7 +970,7 @@ export default function AgriDashboard() {
                 <div>
                   <div className="text-[10px] font-bold uppercase tracking-wider text-[#8A9B93] mb-1.5 flex items-center gap-1">
                     <Satellite className="w-3 h-3 text-sky-400" />
-                    NASA GIBS Overlay
+                    {t("dash.nasaGibs")}
                   </div>
                   <div className="space-y-1">
                     {gibsLayers.map((layer) => (
@@ -978,53 +978,49 @@ export default function AgriDashboard() {
                         key={layer.id}
                         type="button"
                         onClick={() => setGibsLayer(layer.id)}
-                        className={`w-full text-left px-2.5 py-1.5 rounded-xl text-xs font-medium border transition ${
+                        className={`w-full text-left px-2.5 py-1.5 rounded-xl text-xs font-semibold border transition flex items-center justify-between ${
                           gibsLayer === layer.id
-                            ? "bg-[#A3E4B7]/15 border-[#A3E4B7]/50 text-[#A3E4B7] font-semibold"
-                            : "bg-[#121A21] border-white/[0.08] text-[#C7D4CD] hover:border-white/20"
+                            ? "bg-[#A3E4B7]/20 border-[#A3E4B7] text-[#A3E4B7]"
+                            : "bg-[#121A21] border-white/10 text-[#8A9B93] hover:text-[#F2F7F4]"
                         }`}
                       >
-                        {layer.shortLabel}
+                        <span>
+                          {layer.id === "none"
+                            ? (lang === "ar" ? "بدون طبقة قمر صناعي" : "No Satellite Overlay")
+                            : layer.id === "ndvi"
+                            ? (lang === "ar" ? "صحة الغطاء النباتي (NDVI)" : "NASA MODIS NDVI")
+                            : layer.id === "true-color"
+                            ? (lang === "ar" ? "ألوان طبيعية عالية الدقة" : "True Color Surface")
+                            : layer.id === "soil-moisture"
+                            ? (lang === "ar" ? "رطوبة التربة (SMAP)" : "SMAP Soil Moisture")
+                            : layer.id === "lst-day"
+                            ? (lang === "ar" ? "درجة حرارة سطح الأرض" : "Land Surface Temp")
+                            : layer.label}
+                        </span>
+                        {gibsLayer === layer.id && (
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#A3E4B7]" />
+                        )}
                       </button>
                     ))}
                   </div>
                 </div>
 
-                {/* Overlay Date & Opacity */}
+                {/* Layer Opacity Slider */}
                 {gibsLayer !== "none" && (
-                  <div className="pt-2 border-t border-white/10 space-y-2">
-                    <div>
-                      <label className="block text-[10px] font-semibold text-[#8A9B93] mb-1">
-                        Satellite Pass Date
-                      </label>
-                      <input
-                        type="date"
-                        value={gibsDate}
-                        max={maxGibsDate}
-                        onChange={(e) => setGibsDate(e.target.value)}
-                        className="w-full text-xs px-2 py-1 rounded-lg border border-white/10 bg-[#121A21] text-[#F2F7F4] focus:outline-none focus:ring-1 focus:ring-[#A3E4B7]"
-                      />
+                  <div>
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-[#8A9B93] mb-1 flex items-center justify-between">
+                      <span>{t("dash.opacity")}</span>
+                      <span>{Math.round(gibsOpacity * 100)}%</span>
                     </div>
-                    <div>
-                      <div className="flex items-center justify-between text-[10px] font-semibold text-[#8A9B93] mb-1">
-                        <span className="inline-flex items-center gap-1">
-                          <SlidersHorizontal className="w-3 h-3" />
-                          Overlay Opacity
-                        </span>
-                        <span>{Math.round(gibsOpacity * 100)}%</span>
-                      </div>
-                      <input
-                        type="range"
-                        min={0.15}
-                        max={1}
-                        step={0.05}
-                        value={gibsOpacity}
-                        onChange={(e) =>
-                          setGibsOpacity(parseFloat(e.target.value))
-                        }
-                        className="w-full accent-[#A3E4B7]"
-                      />
-                    </div>
+                    <input
+                      type="range"
+                      min={0.1}
+                      max={1}
+                      step={0.05}
+                      value={gibsOpacity}
+                      onChange={(e) => setGibsOpacity(parseFloat(e.target.value))}
+                      className="w-full accent-[#A3E4B7] cursor-pointer"
+                    />
                   </div>
                 )}
               </div>

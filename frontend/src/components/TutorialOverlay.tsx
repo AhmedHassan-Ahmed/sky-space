@@ -17,6 +17,8 @@ import {
   Sparkles,
 } from "lucide-react";
 
+import { useLanguage } from "@/lib/LanguageContext";
+
 interface TutorialOverlayProps {
   isOpen: boolean;
   onToggle: (open: boolean) => void;
@@ -35,59 +37,86 @@ interface TutorialOverlayProps {
 interface TourStepConfig {
   id: string;
   target: string;
-  title: string;
-  description: string;
-  tip: string;
+  titleEn: string;
+  titleAr: string;
+  descriptionEn: string;
+  descriptionAr: string;
+  tipEn: string;
+  tipAr: string;
 }
 
 const TOUR_STEPS: TourStepConfig[] = [
   {
     id: "welcome",
     target: "welcome-cta",
-    title: "1. Welcome — Enter the 3D Earth",
-    description:
+    titleEn: "1. Welcome — Enter the 3D Earth",
+    titleAr: "١. مرحباً بك — استكشف مجسم الأرض 3D",
+    descriptionEn:
       "Welcome to Sky Space! Behind this title is a live interactive 3D Earth powered by satellites. Click View 3D Earth or press Next → to begin.",
-    tip: "Clicking Next → will automatically transition into the 3D Earth so the guided tour continues smoothly.",
+    descriptionAr:
+      "أهلاً بك في سكاي سبيس! يعتمد نظامنا على صور الأقمار الصناعية الفضائية. اضغط على «مجسم الأرض» أو «التالي» للبدء.",
+    tipEn: "Clicking Next → will automatically transition into the 3D Earth so the guided tour continues smoothly.",
+    tipAr: "الضغط على «التالي» سينقلك تلقائياً إلى مجسم الأرض لمتابعة الجولة الإرشادية.",
   },
   {
     id: "location",
     target: "location-search",
-    title: "2. Four Ways to Find Your Farm Location",
-    description:
+    titleEn: "2. Four Ways to Find Your Farm Location",
+    titleAr: "٢. طرق تحديد موقع مزرعتك",
+    descriptionEn:
       "Type your village or town name in the search bar, click the GPS target icon next to Go to use your device location, or spin & zoom the 3D Earth below.",
-    tip: "Have land coordinates or want to jump to a region now? Try a quick shortcut below:",
+    descriptionAr:
+      "اكتب اسم قريتك أو مركزك في شريط البحث، أو اضغط أيقونة الـ GPS لموقعك الفعلي، أو قم بتدوير وتكبير مجسم الأرض.",
+    tipEn: "Have land coordinates or want to jump to a region now? Try a quick shortcut below:",
+    tipAr: "هل لديك إحداثيات أو تريد الانتقال السريع؟ جرب الاختصارات أدناه:",
   },
   {
     id: "views",
     target: "view-switcher",
-    title: "3. Switch Between 3D Earth & 2D Satellite Map",
-    description:
+    titleEn: "3. Switch Between 3D Earth & 2D Satellite Map",
+    titleAr: "٣. التبديل بين مجسم الأرض والخريطة الفضائية",
+    descriptionEn:
       "Explore the planet in 3D Earth view, or click 2D Map (or zoom in close to the ground) for clear overhead satellite photos of your fields.",
-    tip: "In 2D Map view, you can also toggle NASA NDVI Vegetation & Soil Moisture layers in the top-right corner.",
+    descriptionAr:
+      "استكشف التضاريس بمجسم 3D، أو انتقل إلى «خريطة 2D» (أو قرّب للأسفل) لمشاهدة صور الأقمار الصناعية الدقيقة لحقولك.",
+    tipEn: "In 2D Map view, you can also toggle NASA NDVI Vegetation & Soil Moisture layers in the top-right corner.",
+    tipAr: "في وضع الخريطة، يمكنك تفعيل طبقات مؤشر الخضار ورطوبة التربة من الزاوية العلوية.",
   },
   {
     id: "mark-field",
     target: "mark-field-btn",
-    title: "4. Mark Your Field Boundary",
-    description:
+    titleEn: "4. Mark Your Field Boundary",
+    titleAr: "٤. رسم وتحديد حدود حقلك",
+    descriptionEn:
       "Click Mark My Field to open drawing mode on the satellite map. Tap 3 or 4 corners around the edge of your land and press Finish Land.",
-    tip: "Want to test the crop planner right now without drawing? Try a sample parcel below:",
+    descriptionAr:
+      "اضغط على «رسم حقلي» للدخول في وضع الرسم، ثم حدد أركان وزوايا أرضك على الخريطة واضغط إنهاء.",
+    tipEn: "Want to test the crop planner right now without drawing? Try a sample parcel below:",
+    tipAr: "هل تريد تجربة المخطط فوراً دون رسم؟ يمكنك اختيار حقل تجريبي:",
   },
   {
     id: "plan-steps",
     target: "step-progress",
-    title: "5. Answer 3 Simple Questions → Get Your Crop Plan",
-    description:
-      "Once your field is marked, enter your Water Supply, Last Crop Planted, and Main Goal (More Money, Healthy Land, or Save Water) to receive a simple 1-Year Planting Plan.",
-    tip: "Use these 3 step tabs in the top bar anytime to jump back and change your answers or compare crop plans.",
+    titleEn: "5. Answer 3 Simple Questions → Get Your Crop Plan",
+    titleAr: "٥. إدخال بيانات المزرعة والحصول على الخطة",
+    descriptionEn:
+      "Once your field is marked, enter your Water Supply, Last Crop Planted, and Main Goal (Save Water or Improve Soil) to receive an optimized crop rotation.",
+    descriptionAr:
+      "بمجرد تحديد الحقل، أدخل المحصول السابق ومصدر الري والهدف الزراعي لتحصل على دورة زراعية متكاملة ومحسوبة.",
+    tipEn: "Use these 3 step tabs in the top bar anytime to jump back and change your answers or compare crop plans.",
+    tipAr: "يمكنك استخدام خطوات المسار بالأعلى للرجوع وتعديل المدخلات في أي وقت.",
   },
   {
     id: "practice",
     target: "quick-practice",
-    title: '6. Interactive "Quick Practice" Checklist',
-    description:
-      "Put your new skills into action! This live drawer tracks your 4 steps—entering the 3D Earth, finding your location, marking your land, and generating your crop plan.",
-    tip: "You can replay this spotlight tour anytime by clicking Guided Tour in the top bar or Start Guided Tour inside the checklist!",
+    titleEn: '6. Interactive "Quick Practice" Checklist',
+    titleAr: "٦. قائمة المهام التفاعلية السريعة",
+    descriptionEn:
+      "Put your new skills into action! This live drawer tracks your steps—entering the 3D Earth, finding your location, marking your land, and generating your crop plan.",
+    descriptionAr:
+      "ابدأ التطبيق الفعلي! يتابع هذا الدرج خطواتك خطوة بخطوة للوصول إلى خطة المحاصيل الناجحة.",
+    tipEn: "You can replay this spotlight tour anytime by clicking Guided Tour in the top bar!",
+    tipAr: "يمكنك إعادة تشغيل هذه الجولة في أي وقت من زر «جولة إرشادية» بالأعلى!",
   },
 ];
 
@@ -118,6 +147,7 @@ export default function TutorialOverlay({
   onStartDrawing,
   onQuickDemoField,
 }: TutorialOverlayProps) {
+  const { lang, dir } = useLanguage();
   const [stepIndex, setStepIndex] = useState<number>(0);
   const [spotlight, setSpotlight] = useState<SpotlightBox | null>(null);
   const [popoverPos, setPopoverPos] = useState<{ top: number; left: number }>({
@@ -468,7 +498,8 @@ export default function TutorialOverlay({
         <div
           ref={popoverRef}
           role="dialog"
-          aria-label={`Guided Tour ${currentStep.title}`}
+          aria-label={`Guided Tour ${lang === "ar" ? currentStep.titleAr : currentStep.titleEn}`}
+          dir={dir}
           style={{
             top: popoverPos.top,
             left: popoverPos.left,
@@ -503,7 +534,7 @@ export default function TutorialOverlay({
               onClick={handleCloseTour}
               className="text-[11px] font-semibold text-[#8A9B93] hover:text-[#F2F7F4] transition"
             >
-              Skip Tour
+              {lang === "ar" ? "تخطي الجولة" : "Skip Tour"}
             </button>
           </div>
 
@@ -511,17 +542,17 @@ export default function TutorialOverlay({
           <div className="flex items-center gap-2">
             <MiniFarmerIcon />
             <span className="px-2.5 py-0.5 rounded-md bg-[#A3E4B7]/15 border border-[#A3E4B7]/35 text-[10px] font-bold uppercase tracking-[0.14em] text-[#A3E4B7]">
-              STEP {stepIndex + 1} OF {TOUR_STEPS.length}
+              {lang === "ar" ? `الخطوة ${stepIndex + 1} من ${TOUR_STEPS.length}` : `STEP ${stepIndex + 1} OF ${TOUR_STEPS.length}`}
             </span>
           </div>
 
           {/* Title & Description */}
           <div className="space-y-1.5">
             <h3 className="text-sm sm:text-base font-bold text-[#F2F7F4] leading-snug">
-              {currentStep.title}
+              {lang === "ar" ? currentStep.titleAr : currentStep.titleEn}
             </h3>
             <p className="text-xs text-[#C7D4CD] leading-relaxed">
-              {currentStep.description}
+              {lang === "ar" ? currentStep.descriptionAr : currentStep.descriptionEn}
             </p>
           </div>
 
@@ -530,7 +561,7 @@ export default function TutorialOverlay({
             <div className="flex items-start gap-2">
               <Lightbulb className="w-3.5 h-3.5 text-[#A3E4B7] shrink-0 mt-0.5" />
               <p className="text-[11px] text-[#DCE6E0] leading-snug">
-                {currentStep.tip}
+                {lang === "ar" ? currentStep.tipAr : currentStep.tipEn}
               </p>
             </div>
 
@@ -621,7 +652,7 @@ export default function TutorialOverlay({
                   className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#0D1318] border border-white/15 hover:border-[#A3E4B7]/60 text-[10px] font-semibold text-[#F2F7F4] transition"
                 >
                   <Sparkles className="w-3 h-3 text-[#A3E4B7]" />
-                  Try Demo Field
+                  {lang === "ar" ? "تجربة حقل افتراضي" : "Try Demo Field"}
                 </button>
                 <button
                   type="button"
@@ -632,7 +663,7 @@ export default function TutorialOverlay({
                   className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#A3E4B7] text-[#070B0E] text-[10px] font-bold transition"
                 >
                   <PenTool className="w-3 h-3" />
-                  Mark My Field Now
+                  {lang === "ar" ? "رسم الحقل الآن" : "Mark My Field Now"}
                 </button>
               </div>
             )}
@@ -646,12 +677,12 @@ export default function TutorialOverlay({
               onClick={handleBack}
               className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#9DB0A7] hover:text-[#F2F7F4] disabled:opacity-30 transition"
             >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              Back
+              <ArrowLeft className={`w-3.5 h-3.5 ${dir === "rtl" ? "rotate-180" : ""}`} />
+              {lang === "ar" ? "السابق" : "Back"}
             </button>
 
             <span className="text-[10px] text-[#64766E] font-medium select-none">
-              Use &larr; &rarr; keys
+              {lang === "ar" ? "استخدم الأسهم ← →" : "Use ← → keys"}
             </span>
 
             {stepIndex < TOUR_STEPS.length - 1 ? (
@@ -660,8 +691,8 @@ export default function TutorialOverlay({
                 onClick={handleNext}
                 className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-white hover:bg-[#A3E4B7] text-[#070B0E] text-xs font-bold shadow-md transition"
               >
-                Next
-                <ArrowRight className="w-3.5 h-3.5" />
+                {lang === "ar" ? "التالي" : "Next"}
+                <ArrowRight className={`w-3.5 h-3.5 ${dir === "rtl" ? "rotate-180" : ""}`} />
               </button>
             ) : (
               <button
@@ -669,7 +700,7 @@ export default function TutorialOverlay({
                 onClick={handleNext}
                 className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-[#A3E4B7] hover:bg-white text-[#070B0E] text-xs font-bold shadow-md transition"
               >
-                Finish Tour
+                {lang === "ar" ? "إنهاء الجولة" : "Finish Tour"}
                 <PartyPopper className="w-3.5 h-3.5" />
               </button>
             )}

@@ -61,14 +61,14 @@ interface FarmPlannerModalProps {
 }
 
 const EGYPT_CROPS = [
-  { id: "maize", name: "Summer Maize (Dura Shami)", season: "Seifi" },
-  { id: "sorghum", name: "Grain/Forage Sorghum (Dura Rafia)", season: "Seifi" },
-  { id: "soybean", name: "Soybean (Foul Soya)", season: "Seifi" },
-  { id: "sesame", name: "Sesame (Semsem)", season: "Seifi" },
-  { id: "wheat", name: "Wheat (Qamh)", season: "Shitwi" },
-  { id: "berseem", name: "Egyptian Clover (Berseem)", season: "Shitwi" },
-  { id: "faba_bean", name: "Faba Bean (Foul Baladi)", season: "Shitwi" },
-  { id: "sugar_beet", name: "Sugar Beet (Bangar El-Sokkar)", season: "Shitwi" },
+  { id: "maize", name: "Summer Maize (Dura Shami)", nameEn: "Summer Maize", nameAr: "ذرة شامية صيفية", seasonEn: "Summer", seasonAr: "صيفية", season: "Seifi" },
+  { id: "sorghum", name: "Grain/Forage Sorghum (Dura Rafia)", nameEn: "Grain/Forage Sorghum", nameAr: "ذرة رفيعة حبوب/علف", seasonEn: "Summer", seasonAr: "صيفية", season: "Seifi" },
+  { id: "soybean", name: "Soybean (Foul Soya)", nameEn: "Soybean", nameAr: "فول صويا", seasonEn: "Summer", seasonAr: "صيفية", season: "Seifi" },
+  { id: "sesame", name: "Sesame (Semsem)", nameEn: "Sesame", nameAr: "سمسم", seasonEn: "Summer", seasonAr: "صيفية", season: "Seifi" },
+  { id: "wheat", name: "Wheat (Qamh)", nameEn: "Wheat", nameAr: "قمح", seasonEn: "Winter", seasonAr: "شتوية", season: "Shitwi" },
+  { id: "berseem", name: "Egyptian Clover (Berseem)", nameEn: "Egyptian Clover (Berseem)", nameAr: "برسيم مصري", seasonEn: "Winter", seasonAr: "شتوية", season: "Shitwi" },
+  { id: "faba_bean", name: "Faba Bean (Foul Baladi)", nameEn: "Faba Bean", nameAr: "فول بلدي", seasonEn: "Winter", seasonAr: "شتوية", season: "Shitwi" },
+  { id: "sugar_beet", name: "Sugar Beet (Bangar El-Sokkar)", nameEn: "Sugar Beet", nameAr: "بنجر السكر", seasonEn: "Winter", seasonAr: "شتوية", season: "Shitwi" },
 ];
 
 const GLOSSARY_DATA = [
@@ -76,26 +76,26 @@ const GLOSSARY_DATA = [
     key: "evapotranspiration",
     symbol: "ET₀",
     nameEn: "Evapotranspiration (ET₀)",
-    nameAr: "البخر-نتح (معدل عطش واستهلاك المية)",
+    nameAr: "البخر-نتح واستهلاك المياه (ET₀)",
     simpleConceptEn: "Water lost to atmosphere from soil and plants (mm/day).",
-    simpleConceptAr: "كمية المية اللي الأرض والزرع بيفقدوها في الجو بسبب الحر والشمس والهوا.",
+    simpleConceptAr: "كمية المياه التي يفقدها الحقل والزرع في الجو بفعل الحرارة والشمس والرياح.",
     farmerExplanationEn:
       "Measures daily crop thirst in millimeters. High ET₀ means sun and wind are pulling water rapidly from your field, requiring timely irrigation to prevent wilting.",
     farmerExplanationAr:
-      "بتقيس عطش الزرع بالمليمتر كل يوم؛ كل ما الرقم ده يعلى، معناه إن الشمس والهوا بيسحبوا المية بسرعة من الغيط، والزرع محتاج ري في ميعاده عشان ميعطش.",
+      "مقياس يومي لعطش الزرع بالمليمتر؛ كلما ارتفع هذا الرقم زادت سرعة سحب الحرارة للمياه، وتطلب الحقل رياً في موعده لتجنب الذبول.",
     unit: "mm/day",
   },
   {
     key: "ndvi",
     symbol: "NDVI",
     nameEn: "Vegetation Index (NDVI)",
-    nameAr: "مؤشر الغطاء النباتي (خضار وحيوية الزرع)",
+    nameAr: "مؤشر الغطاء النباتي (NDVI)",
     simpleConceptEn: "Satellite greenness and crop canopy health (0.0 to 1.0).",
-    simpleConceptAr: "مقياس لقوة خضار وصحة أوراق الزرع من صور القمر الصناعي.",
+    simpleConceptAr: "مقياس لكثافة خضار وصحة أوراق المحصول عبر صور الأقمار الصناعية.",
     farmerExplanationEn:
       "Calculated from reflected sunlight. Values below 0.20 indicate bare or dry soil; values above 0.60 show dense, healthy, thriving crop foliage.",
     farmerExplanationAr:
-      "بيتحسب من انعكاس الشمس على الورق؛ لو أقل من ٠.٢٠ يبقى الأرض بور أو مكشوفة للشمس، ولو عدى ٠.٦٠ يبقى الغيط مخضر ومزدهر وصحته كويسة جداً.",
+      "يحسب من انعكاس ضوء الشمس؛ أقل من ٠.٢٠ يشير لأرض مكشوفة أو جافة، وأعلى من ٠.٦٠ يدل على غطاء نباتي كثيف ونشط.",
     unit: "ratio (0 to 1)",
   },
   {
@@ -104,63 +104,63 @@ const GLOSSARY_DATA = [
     nameEn: "Soil Moisture Anomaly",
     nameAr: "شذوذ رطوبة التربة في الجذور",
     simpleConceptEn: "Root-zone water comparison vs 10-year historical average.",
-    simpleConceptAr: "مقارنة رطوبة الأرض في عمق الجذور بمتوسط السنين اللي فاتت في نفس التوقيت.",
+    simpleConceptAr: "مقارنة رطوبة منطقة الجذور بمتوسط السنوات السابقة في التوقيت نفسه.",
     farmerExplanationEn:
       "Indicates whether root-zone moisture is wetter or drier than usual for this time of year, helping adjust irrigation before water stress sets in.",
     farmerExplanationAr:
-      "بيعرفك هل الأرض في عمق الجذور أشد جفافاً أو أزيد رطوبة من المعتاد في الوقت ده من السنة، عشان تظبط نوبات الري قبل ما الزرع يتأثر.",
+      "يوضح ما إذا كانت التربة عند عمق الجذور أكثر جفافاً أو رطوبة من المعتاد، لضبط نوبات الري مبكراً.",
     unit: "saturation index (0 to 1)",
   },
   {
     key: "bareSoilWindow",
     symbol: "Bare-Run",
     nameEn: "Bare-Field Vulnerability Window",
-    nameAr: "فترة خلو وانكشاف الأرض بين العروات",
+    nameAr: "فترة انكشاف وخلو الأرض بين العروات",
     simpleConceptEn: "Days where field is left unplanted without vegetative cover.",
-    simpleConceptAr: "الأيام اللي الأرض بتقعد فيها فاضية ومكشوفة للشمس بين حصاد عروة وزراعة اللي بعدها.",
+    simpleConceptAr: "عدد الأيام التي تظل فيها الأرض خالية ومكشوفة للشمس بين حصاد عروة وزراعة العروة التالية.",
     farmerExplanationEn:
       "Leaving soil bare under hot sun breaks down organic carbon and accelerates moisture evaporation. Sowing quick cover crops like Berseem Fahl protects topsoil fertility.",
     farmerExplanationAr:
-      "لما الأرض تقعد فاضية تحت الشمس المحرقة، المادة العضوية بتتفكك والرطوبة بتتبخر في الهوا. زراعة غطاء سريع زي البرسيم الفحل أو اللوبيا بيحمي الأرض ويزود غلتها.",
+      "ترك الأرض مكشوفة تحت شمس الصيف يفكك المادة العضوية ويسرع فقد الرطوبة؛ زراعة محصول تغطية سريع يحمي خصوبة التربة.",
     unit: "days",
   },
   {
     key: "nitrogenFixation",
     symbol: "N-Fix",
     nameEn: "Biological Nitrogen Fixation",
-    nameAr: "تثبيت النيتروجين الحيوي (خصوبة طبيعية)",
+    nameAr: "تثبيت النيتروجين الحيوي",
     simpleConceptEn: "Legumes capturing atmospheric nitrogen to feed the soil.",
-    simpleConceptAr: "قدرة البقوليات إنها تسحب النيتروجين من الهوا وتخزنه كسماد طبيعي في الأرض.",
+    simpleConceptAr: "قدرة المحاصيل البقولية على استخلاص النيتروجين الجوي وإمداد التربة به طبيعياً.",
     farmerExplanationEn:
       "Legumes (clover, cowpea, soybeans) host friendly root bacteria that produce natural nitrogen, slashing your chemical fertilizer and urea bills for the following crop.",
     farmerExplanationAr:
-      "محاصيل زي البرسيم واللوبيا والصويا فيها بكتيريا نافعة في الجذور بتسحب النيتروجين من الجو وتثبته في الطين، فتوفر عليك شكاير الكيماوي واليوريا للمحصول اللي جاي.",
+      "تحتوي البقوليات (برسيم، لوبيا، صويا) على بكتيريا عقدية نافعة تثبت النيتروجين الطبيعي في التربة وتقلل تكاليف التسميد الكيماوي.",
     unit: "kg N/feddan balance",
   },
   {
     key: "salinityEce",
     symbol: "ECe",
     nameEn: "Soil Salinity (ECe)",
-    nameAr: "ملوحة التربة المعملية (ECe)",
+    nameAr: "ملوحة التربة (ECe)",
     simpleConceptEn: "Laboratory salt concentration in saturated soil extract (dS/m).",
-    simpleConceptAr: "درجة ملوحة الطين في المعمل؛ بتوضح مدى صعوبة امتصاص الجذور للمية.",
+    simpleConceptAr: "تركيز الأملاح في مستخلص التربة المشبع مقاساً بالمعمل (ديسيسيمنز/متر).",
     farmerExplanationEn:
       "Values above 4 dS/m create osmotic resistance, making it hard for crop roots to absorb water even in wet soil. Requires salt-tolerant varieties and leaching.",
     farmerExplanationAr:
-      "لو الرقم عدى ٤ ديسيسيمنز/متر، الملوحة بتمسك المية وتمنع الجذور تشرب بسهولة حتى لو الأرض مروية؛ ساعتها بنحتاج نزرع محاصيل تستحمل الملوحة ونغسل الأرض.",
+      "إذا تجاوز المؤشر ٤ ديسيسيمنز/متر تصعب استفادة الجذور من مياه الري حتى في التربة الرطبة، وتتطلب زراعة أصناف متحملة للملوحة وإجراء ريات غسيل.",
     unit: "dS/m",
   },
   {
     key: "heatStressDays",
     symbol: "Tmax > 38°C",
     nameEn: "Heat Stress Days",
-    nameAr: "أيام القيظ والإجهاد الحراري",
+    nameAr: "أيام الإجهاد الحراري الشديد",
     simpleConceptEn: "Days with maximum air temperature exceeding 38°C.",
-    simpleConceptAr: "عدد أيام الصيف الشديدة اللي الحرارة فيها بتعدي ٣٨ درجة مئوية.",
+    simpleConceptAr: "عدد الأيام التي تتجاوز فيها درجات الحرارة العظمى ٣٨ درجة مئوية.",
     farmerExplanationEn:
       "Extreme heat burns pollen, stunts flower setting, and drastically spikes water loss. Requires early morning or nocturnal irrigation cycles.",
     farmerExplanationAr:
-      "موجات الحر دي بتسقط الأزهار وتوقف التحجيم وتضاعف استهلاك المية؛ وعشان كده بننصح بالري في الفجرية أو بالليل واختيار أصناف بتتحمل الحرارة.",
+      "موجات الحر الشديدة تضر بعقد الأزهار وتزيد من فاقد البخر؛ يُنصح بريات الفجر أو الليل واختيار محاصيل صيفية متأقلمة.",
     unit: "days",
   },
 ];
@@ -183,7 +183,7 @@ export default function FarmPlannerModal({
   onOpenAuth,
   savedEvaluation,
 }: FarmPlannerModalProps) {
-  const { lang, setLang, t } = useLanguage();
+  const { lang, dir, setLang, t } = useLanguage();
 
   // Evaluation result from backend
   const [evaluation, setEvaluation] = useState<FieldShiftEvaluation | null>(savedEvaluation || null);
@@ -370,7 +370,7 @@ export default function FarmPlannerModal({
       aria-label="Crop Rotation & Farm Planner"
       className="fixed inset-0 z-[480] flex items-center justify-center p-3 sm:p-5 bg-[#070B0E]/75 backdrop-blur-md animate-fade-in"
     >
-      <div className="w-full max-w-4xl max-h-[92dvh] flex flex-col rounded-3xl bg-[#0B1015]/95 border border-white/10 shadow-2xl text-[#F2F7F4] overflow-hidden">
+      <div dir={dir} className="w-full max-w-4xl max-h-[92dvh] flex flex-col rounded-3xl bg-[#0B1015]/95 border border-white/10 shadow-2xl text-[#F2F7F4] overflow-hidden">
         {/* Top Header: Field Info, Area, NASA Weather & Glossary Button */}
         <div className="shrink-0 px-5 py-4 border-b border-white/[0.08] bg-[#0D1318]">
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -378,8 +378,8 @@ export default function FarmPlannerModal({
               <div className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-[#A3E4B7] mb-1">
                 <img src="/logo.svg" alt="Sky Space" className="w-3.5 h-3.5 object-contain" />
                 {step === "inputs"
-                  ? "Sky Space • Ground Parameters"
-                  : "Sky Space Engine • Optimal Crop Rotation Plan"}
+                  ? (lang === "ar" ? "سكاي سبيس • بيانات الحقل والزراعة" : "Sky Space • Ground Parameters")
+                  : (lang === "ar" ? "سكاي سبيس • خطة الدورة الزراعية المثالية" : "Sky Space Engine • Optimal Crop Rotation Plan")}
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 {step === "inputs" ? (
@@ -396,7 +396,7 @@ export default function FarmPlannerModal({
                   </h2>
                 )}
                 <span className="px-3 py-1 rounded-full bg-[#111920] border border-white/10 text-xs font-semibold text-[#A3E4B7]">
-                  {activeFeddans} Feddans ({field.areaHectares.toFixed(2)} Ha)
+                  {activeFeddans} {lang === "ar" ? "فدان" : "Feddans"} ({field.areaHectares.toFixed(2)} {lang === "ar" ? "هكتار" : "Ha"})
                 </span>
                 <span className="text-[11px] text-[#8A9B93] flex items-center gap-1">
                   <MapPin className="w-3 h-3 text-[#A3E4B7]" />
@@ -430,10 +430,10 @@ export default function FarmPlannerModal({
                 type="button"
                 onClick={() => setShowGlossary(true)}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-[#111920] hover:bg-[#162029] border border-[#A3E4B7]/30 text-xs font-bold text-[#A3E4B7] transition shadow-sm"
-                title="Scientific Glossary for Farmers (قاموس المصطلحات)"
+                title={t("modal.glossaryBtn")}
               >
                 <BookOpen className="w-3.5 h-3.5 text-[#A3E4B7]" />
-                <span className="hidden sm:inline">{lang === "ar" ? "قاموس" : "Glossary"}</span>
+                <span className="hidden sm:inline">{t("modal.glossaryBtn")}</span>
               </button>
 
               <div className="flex items-center gap-3 px-3 py-1.5 rounded-2xl bg-[#111920] border border-white/[0.08] text-xs">
@@ -508,7 +508,7 @@ export default function FarmPlannerModal({
                 <div className="rounded-2xl bg-[#111920] border border-white/[0.08] p-4 space-y-2">
                   <label className="block text-xs font-bold text-[#F2F7F4] uppercase tracking-wider flex items-center gap-1.5">
                     <Wheat className="w-3.5 h-3.5 text-[#A3E4B7]" />
-                    Last Crop (e.g., Maize)
+                    {t("input.lastCrop")}
                   </label>
                   <select
                     value={activeLastCrop}
@@ -517,18 +517,18 @@ export default function FarmPlannerModal({
                   >
                     {EGYPT_CROPS.map((c) => (
                       <option key={c.id} value={c.name}>
-                        {c.name} ({c.season})
+                        {lang === "ar" ? c.nameAr : c.nameEn} ({lang === "ar" ? c.seasonAr : c.seasonEn})
                       </option>
                     ))}
                   </select>
                   <p className="text-[11px] text-[#8A9B93]">
-                    Engine screens rotation history to break cereal disease cycles.
+                    {t("input.lastCropTip")}
                   </p>
                 </div>
 
                 <div className="rounded-2xl bg-[#111920] border border-white/[0.08] p-4 space-y-2">
                   <label className="block text-xs font-bold text-[#F2F7F4] uppercase tracking-wider">
-                    Planting Start Date
+                    {t("input.plantingDate")}
                   </label>
                   <input
                     type="date"
@@ -537,7 +537,7 @@ export default function FarmPlannerModal({
                     className="w-full bg-[#0D1318] border border-white/15 rounded-xl px-3 py-2 text-sm text-[#F2F7F4] focus:outline-none focus:ring-2 focus:ring-[#A3E4B7]/40"
                   />
                   <p className="text-[11px] text-[#A3E4B7]">
-                    Target Window: Winter Season (Shitwi 2026/2027)
+                    {t("input.targetWindow")}
                   </p>
                 </div>
               </div>
@@ -545,12 +545,13 @@ export default function FarmPlannerModal({
               {/* Input 5: Irrigation Method */}
               <div className="rounded-2xl bg-[#111920] border border-white/[0.08] p-4 space-y-2.5">
                 <label className="block text-xs font-bold text-[#F2F7F4] uppercase tracking-wider">
-                  Irrigation Method
+                  {t("input.irrigation")}
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   {(["Surface Irrigation", "Drip", "Sprinkler"] as const).map((method) => {
                     const active = activeIrrigation === method;
                     const efficiency = method === "Surface Irrigation" ? "55%" : method === "Drip" ? "88%" : "75%";
+                    const label = method === "Surface Irrigation" ? t("input.surface") : method === "Drip" ? t("input.drip") : t("input.sprinkler");
                     return (
                       <button
                         key={method}
@@ -563,10 +564,10 @@ export default function FarmPlannerModal({
                         }`}
                       >
                         <div className="text-xs font-bold flex items-center justify-between">
-                          <span>{method}</span>
+                          <span>{label}</span>
                           {active && <CheckCircle2 className="w-3.5 h-3.5 text-[#A3E4B7]" />}
                         </div>
-                        <div className="text-[10px] text-[#8A9B93] mt-0.5">Efficiency: {efficiency}</div>
+                        <div className="text-[10px] text-[#8A9B93] mt-0.5">{t("input.efficiency")}: {efficiency}</div>
                       </button>
                     );
                   })}
@@ -577,12 +578,13 @@ export default function FarmPlannerModal({
               <div className="rounded-2xl bg-[#111920] border border-white/[0.08] p-4 space-y-2.5">
                 <label className="block text-xs font-bold text-[#F2F7F4] uppercase tracking-wider flex items-center gap-1.5">
                   <Droplets className="w-3.5 h-3.5 text-sky-400" />
-                  Water Availability
+                  {t("input.waterAvail")}
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   {(["Limited", "Moderate", "Abundant"] as const).map((avail) => {
                     const active = activeWaterAvail === avail;
-                    const note = avail === "Limited" ? "Canal tail-end (deficit risk)" : avail === "Moderate" ? "Mid-canal (average supply)" : "Canal head (plentiful)";
+                    const label = avail === "Limited" ? t("input.limited") : avail === "Moderate" ? t("input.moderate") : t("input.abundant");
+                    const note = avail === "Limited" ? t("input.limitedTip") : avail === "Moderate" ? t("input.moderateTip") : t("input.abundantTip");
                     return (
                       <button
                         key={avail}
@@ -595,7 +597,7 @@ export default function FarmPlannerModal({
                         }`}
                       >
                         <div className="text-xs font-bold flex items-center justify-between">
-                          <span>{avail}</span>
+                          <span>{label}</span>
                           {active && <CheckCircle2 className="w-3.5 h-3.5 text-sky-400" />}
                         </div>
                         <div className="text-[10px] text-[#8A9B93] mt-0.5">{note}</div>
@@ -608,7 +610,7 @@ export default function FarmPlannerModal({
               {/* Input 7: Plan Objective */}
               <div className="rounded-2xl bg-[#111920] border border-white/[0.08] p-4 space-y-2.5">
                 <label className="block text-xs font-bold text-[#F2F7F4] uppercase tracking-wider">
-                  Plan Objective
+                  {t("input.objective")}
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   <button
@@ -622,10 +624,10 @@ export default function FarmPlannerModal({
                   >
                     <div className="flex items-center gap-2 font-bold text-sm text-white mb-1">
                       <Droplets className="w-4 h-4 text-sky-400" />
-                      Save Water
+                      {t("input.saveWater")}
                     </div>
                     <p className="text-xs text-[#8A9B93] leading-snug">
-                      Maximize irrigation water productivity and prioritize drought & heat-resilient crops.
+                      {t("input.saveWaterDesc")}
                     </p>
                   </button>
 
@@ -640,10 +642,10 @@ export default function FarmPlannerModal({
                   >
                     <div className="flex items-center gap-2 font-bold text-sm text-white mb-1">
                       <Leaf className="w-4 h-4 text-[#A3E4B7]" />
-                      Improve Soil Health
+                      {t("input.improveSoil")}
                     </div>
                     <p className="text-xs text-[#8A9B93] leading-snug">
-                      Restore nitrogen index, enhance soil organic carbon, and include nitrogen-fixing legumes.
+                      {t("input.improveSoilDesc")}
                     </p>
                   </button>
                 </div>
@@ -787,7 +789,7 @@ export default function FarmPlannerModal({
                       className="text-[11px] text-[#A3E4B7] hover:underline flex items-center gap-1"
                     >
                       <RotateCcw className="w-3 h-3" />
-                      Reset to Baseline (إعادة ضبط)
+                      {t("scenario.reset")}
                     </button>
                   )}
                 </div>
@@ -903,7 +905,7 @@ export default function FarmPlannerModal({
 
                   <div className="pt-1">
                     <div className="text-[11px] font-bold uppercase tracking-wider text-amber-400 mb-2">
-                      Recommended Tactical Cover Crops (محاصيل تغطية سريعة مقترحة):
+                      {t("tactical.title")}
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                       <div className="diag-card p-3.5 rounded-xl bg-black/40 border border-amber-500/20 space-y-2">
@@ -913,16 +915,15 @@ export default function FarmPlannerModal({
                               <Leaf className="w-4 h-4 text-emerald-400" />
                             </div>
                             <div>
-                              <div className="text-xs font-bold text-white">Berseem Fahl</div>
-                              <div className="text-[10px] text-amber-200/70">برسيم فحل</div>
+                              <div className="text-xs font-bold text-white">
+                                {t("tactical.fahl")}
+                              </div>
                             </div>
                           </div>
-                          <span className="text-[9px] font-bold text-[#A3E4B7] bg-[#A3E4B7]/10 px-2 py-0.5 rounded-full whitespace-nowrap">65 {lang === "ar" ? "يوم" : "Days"}</span>
+                          <span className="text-[9px] font-bold text-[#A3E4B7] bg-[#A3E4B7]/10 px-2 py-0.5 rounded-full whitespace-nowrap">{t("tactical.fahlBadge")}</span>
                         </div>
                         <p className="text-[11px] text-[#9DB0A7] leading-relaxed">
-                          {lang === "ar"
-                            ? "غطاء نباتي سريع يثبت 30–45 كجم نيتروجين/فدان قبل زراعة القمح؛ يحمي التربة من رياح الخريف."
-                            : "Fast canopy fixing 30–45 kg N/feddan before wheat sowing; shields topsoil from autumn desert winds."}
+                          {t("tactical.fahlDesc")}
                         </p>
                       </div>
 
@@ -933,16 +934,15 @@ export default function FarmPlannerModal({
                               <Sun className="w-4 h-4 text-amber-400" />
                             </div>
                             <div>
-                              <div className="text-xs font-bold text-white">Nili Cowpea</div>
-                              <div className="text-[10px] text-amber-200/70">لوبيا علف نيلية</div>
+                              <div className="text-xs font-bold text-white">
+                                {t("tactical.cowpea")}
+                              </div>
                             </div>
                           </div>
-                          <span className="text-[9px] font-bold text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded-full whitespace-nowrap">70 {lang === "ar" ? "يوم" : "Days"}</span>
+                          <span className="text-[9px] font-bold text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded-full whitespace-nowrap">{t("tactical.cowpeaBadge")}</span>
                         </div>
                         <p className="text-[11px] text-[#9DB0A7] leading-relaxed">
-                          {lang === "ar"
-                            ? "يتحمل حرارة الصيف، يقمع بذور الأعشاب، ويمنع تقشر التربة."
-                            : "Tolerates summer heat, suppresses weed seedbanks, and prevents soil crusting."}
+                          {t("tactical.cowpeaDesc")}
                         </p>
                       </div>
                     </div>
@@ -956,13 +956,13 @@ export default function FarmPlannerModal({
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>
                       <span className="px-3 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-[#A3E4B7] text-[#070B0E]">
-                        RECOMMENDED STRATEGY • {evaluation.proposed.badge}
+                        {t("strategy.recommended")} • {evaluation.proposed.badge}
                       </span>
                       <h3 className="text-xl font-bold text-white mt-1.5">
-                        {evaluation.proposed.labelEn}
+                        {lang === "ar" ? (evaluation.proposed.labelAr || evaluation.proposed.labelEn) : evaluation.proposed.labelEn}
                       </h3>
                       <p className="text-xs text-[#A3E4B7]">
-                        Optimal match for {activeObjective} in {activeLocation}
+                        {t("strategy.optimalFor")} {activeObjective === "Save Water" ? t("input.saveWater") : t("input.improveSoil")} {t("strategy.inRegion")} {activeLocation}
                       </p>
                     </div>
 
@@ -971,7 +971,7 @@ export default function FarmPlannerModal({
                         {evaluation.proposed.finalSuitability}
                       </div>
                       <div className="text-[10px] uppercase tracking-wider text-[#8A9B93] mt-1">
-                        Suitability
+                        {t("strategy.suitability")}
                       </div>
                     </div>
                   </div>
@@ -982,13 +982,19 @@ export default function FarmPlannerModal({
                       <React.Fragment key={c.id || idx}>
                         <div className="diag-card flex-1 min-w-[130px] p-2.5 rounded-lg bg-[#111920] border border-[#A3E4B7]/30">
                           <div className="text-[10px] font-bold uppercase text-[#8A9B93]">
-                            {c.season === "Shitwi" ? "🌾 Shitwi" : c.season === "Seifi" ? "☀️ Seifi" : "🍂 Nili"}
+                            {c.season === "Shitwi"
+                              ? (lang === "ar" ? "🌾 عروة شتوية" : "🌾 Winter (Shitwi)")
+                              : c.season === "Seifi"
+                              ? (lang === "ar" ? "☀️ عروة صيفية" : "☀️ Summer (Seifi)")
+                              : (lang === "ar" ? "🍂 عروة نيلية" : "🍂 Autumn (Nili)")}
                           </div>
-                          <div className="text-sm font-bold text-white mt-0.5">{c.nameEn}</div>
+                          <div className="text-sm font-bold text-white mt-0.5">
+                            {lang === "ar" ? (c.nameAr || c.nameEn) : c.nameEn}
+                          </div>
                           <div className="text-[11px] text-[#A3E4B7]">{c.family} · Kc: {c.kc}</div>
                         </div>
                         {idx < evaluation.proposed.crops.length - 1 && (
-                          <span className="text-[#A3E4B7] font-bold text-lg">➔</span>
+                          <span className={`text-[#A3E4B7] font-bold text-lg ${dir === "rtl" ? "rotate-180" : ""}`}>➔</span>
                         )}
                       </React.Fragment>
                     ))}
@@ -997,35 +1003,35 @@ export default function FarmPlannerModal({
                   {/* Metrics Grid */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
                     <div className="p-3 rounded-xl bg-black/30 border border-white/10">
-                      <div className="text-[10px] uppercase text-[#8A9B93]">Water Savings</div>
+                      <div className="text-[10px] uppercase text-[#8A9B93]">{t("strategy.waterSavings")}</div>
                       <div className="text-lg font-bold text-[#A3E4B7] mt-0.5">
                         {evaluation.proposed.waterSavedPercent > 0 ? `+${evaluation.proposed.waterSavedPercent}%` : `${evaluation.proposed.waterSavedPercent}%`}
                       </div>
-                      <div className="text-[10px] text-[#8A9B93]">vs baseline rotation</div>
+                      <div className="text-[10px] text-[#8A9B93]">{t("strategy.vsBaseline")}</div>
                     </div>
 
                     <div className="p-3 rounded-xl bg-black/30 border border-white/10">
-                      <div className="text-[10px] uppercase text-[#8A9B93]">Water per Feddan</div>
+                      <div className="text-[10px] uppercase text-[#8A9B93]">{t("strategy.waterPerFeddan")}</div>
                       <div className="text-lg font-bold text-sky-400 mt-0.5">
                         {evaluation.proposed.grossWaterM3Feddan.toLocaleString()} m³
                       </div>
-                      <div className="text-[10px] text-[#8A9B93]">m³/feddan/cycle</div>
+                      <div className="text-[10px] text-[#8A9B93]">{t("strategy.m3Cycle")}</div>
                     </div>
 
                     <div className="p-3 rounded-xl bg-black/30 border border-white/10">
-                      <div className="text-[10px] uppercase text-[#8A9B93]">Total Farm Water</div>
+                      <div className="text-[10px] uppercase text-[#8A9B93]">{t("strategy.totalWater")}</div>
                       <div className="text-lg font-bold text-white mt-0.5">
                         {evaluation.proposed.totalFarmWaterM3.toLocaleString()} m³
                       </div>
-                      <div className="text-[10px] text-[#8A9B93]">{activeFeddans} Feddans total</div>
+                      <div className="text-[10px] text-[#8A9B93]">{activeFeddans} {lang === "ar" ? "فدان إجمالي" : "Feddans total"}</div>
                     </div>
 
                     <div className="p-3 rounded-xl bg-black/30 border border-white/10">
-                      <div className="text-[10px] uppercase text-[#8A9B93]">Nitrogen Balance</div>
+                      <div className="text-[10px] uppercase text-[#8A9B93]">{t("strategy.nitrogenBalance")}</div>
                       <div className="text-lg font-bold text-[#A3E4B7] mt-0.5">
                         {evaluation.proposed.nitrogenBalance > 0 ? `+${evaluation.proposed.nitrogenBalance}` : evaluation.proposed.nitrogenBalance}
                       </div>
-                      <div className="text-[10px] text-[#8A9B93]">Soil Health Index: {evaluation.proposed.soilScore}</div>
+                      <div className="text-[10px] text-[#8A9B93]">{t("strategy.soilHealthIdx")}: {evaluation.proposed.soilScore}</div>
                     </div>
                   </div>
 
@@ -1034,7 +1040,7 @@ export default function FarmPlannerModal({
                     <div className="flex items-center justify-between border-b border-white/10 pb-2">
                       <div className="text-xs font-bold text-[#A3E4B7] uppercase tracking-wider flex items-center gap-1.5">
                         <Sparkles className="w-3.5 h-3.5" />
-                        5-Element Strategy Evaluation (عناصر تقييم الاستراتيجية الـ ٥)
+                        {t("eval.title")}
                       </div>
                       <div className="flex items-center gap-1 bg-[#111920] p-0.5 rounded-lg border border-white/10 text-[11px]">
                         <button
@@ -1058,7 +1064,7 @@ export default function FarmPlannerModal({
                       {/* 1. Why Suggested */}
                       <div className="p-3 rounded-lg bg-[#111920]/80 border-l-2 border-[#A3E4B7] space-y-1">
                         <div className="font-bold text-[#A3E4B7] flex items-center gap-1">
-                          <span>💡 1. Why Suggested (سبب الاختيار):</span>
+                          <span>{t("eval.why")}</span>
                         </div>
                         <p className="text-[#cbd5e1] leading-relaxed">
                           {explanationLang === "ar"
@@ -1070,7 +1076,7 @@ export default function FarmPlannerModal({
                       {/* 2. Supporting Evidence */}
                       <div className="p-3 rounded-lg bg-[#111920]/80 border-l-2 border-sky-400 space-y-1">
                         <div className="font-bold text-sky-400 flex items-center gap-1">
-                          <span>🛰️ 2. Supporting Evidence (الدليل من بيانات ناسا):</span>
+                          <span>{t("eval.evidence")}</span>
                         </div>
                         <p className="text-[#cbd5e1] leading-relaxed">
                           {explanationLang === "ar"
@@ -1082,7 +1088,7 @@ export default function FarmPlannerModal({
                       {/* 3. Expected Benefits */}
                       <div className="p-3 rounded-lg bg-[#111920]/80 border-l-2 border-emerald-400 space-y-1">
                         <div className="font-bold text-emerald-400 flex items-center gap-1">
-                          <span>📈 3. Expected Benefits (الفوائد المتوقعة):</span>
+                          <span>{t("eval.benefits")}</span>
                         </div>
                         <p className="text-[#cbd5e1] leading-relaxed">
                           {explanationLang === "ar"
@@ -1094,7 +1100,7 @@ export default function FarmPlannerModal({
                       {/* 4. Information Gaps */}
                       <div className="p-3 rounded-lg bg-[#111920]/80 border-l-2 border-amber-400 space-y-1">
                         <div className="font-bold text-amber-400 flex items-center gap-1">
-                          <span>🔍 4. Information Gaps (ما لا يراه القمر الصناعي):</span>
+                          <span>{t("eval.gaps")}</span>
                         </div>
                         <p className="text-[#cbd5e1] leading-relaxed">
                           {explanationLang === "ar"
@@ -1106,7 +1112,7 @@ export default function FarmPlannerModal({
                       {/* 5. Risks & Agronomist Review */}
                       <div className="p-3 rounded-lg bg-[#111920]/80 border-l-2 border-rose-400 space-y-1.5">
                         <div className="font-bold text-rose-400 flex items-center gap-1">
-                          <span>⚠️ 5. Risks Requiring Local Review (المخاطر والتنبيه الإرشادي):</span>
+                          <span>{t("eval.risks")}</span>
                         </div>
                         <p className="text-[#cbd5e1] leading-relaxed">
                           {explanationLang === "ar"
@@ -1114,9 +1120,7 @@ export default function FarmPlannerModal({
                             : (evaluation.proposed.explanation?.risksLocalReview?.en || "Verify local seed cultivar maturity days and district canal rotation intervals.")}
                         </p>
                         <div className="p-2 rounded bg-black/40 border border-white/10 text-[11px] text-amber-300 font-semibold">
-                          {explanationLang === "ar"
-                            ? "تنبيه إرشادي: هذا النظام أداة دعم قرار استرشادية مبنية على الأقمار الصناعية والنماذج البيئية، وليست بديلاً عن المعاينة الميدانية للمهندس الزراعي وخبرة المزارع الميدانية."
-                            : "Decision-Support Advisory: Sky Space is an orbital decision-support aid to guide agronomic planning and is NOT a substitute for on-site agronomist consultation and farmer local field experience."}
+                          {t("eval.advisoryNotice")}
                         </div>
                       </div>
                     </div>
@@ -1128,7 +1132,7 @@ export default function FarmPlannerModal({
                       {evaluation.warnings.critical.map((w, idx) => (
                         <div key={idx} className="p-2.5 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-2">
                           <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5" />
-                          <span>{w.en}</span>
+                          <span>{lang === "ar" ? (w.ar || w.en) : (w.en || w.ar)}</span>
                         </div>
                       ))}
                     </div>
@@ -1138,7 +1142,7 @@ export default function FarmPlannerModal({
                   {evaluation.proposed.verificationChecklist && evaluation.proposed.verificationChecklist.length > 0 && (
                     <div className="space-y-1 text-xs">
                       <div className="font-bold text-[#A3E4B7] text-[11px] uppercase tracking-wider">
-                        Pre-Planting Technical Checklist:
+                        {t("checklist.title")}
                       </div>
                       {evaluation.proposed.verificationChecklist.map((item, idx) => (
                         <div key={idx} className="flex items-start gap-1.5 text-[#9DB0A7]">
@@ -1162,12 +1166,12 @@ export default function FarmPlannerModal({
                     {showOtherPlans ? (
                       <>
                         <ChevronUp className="w-4 h-4" />
-                        Hide Alternative Strategies
+                        {t("strat.hideAlternatives")}
                       </>
                     ) : (
                       <>
                         <ChevronDown className="w-4 h-4" />
-                        Compare {evaluation.strategies.length - 1} Other Evaluated Strategies
+                        {t("strat.showAlternatives")} ({evaluation.strategies.length - 1})
                       </>
                     )}
                   </button>
@@ -1182,13 +1186,15 @@ export default function FarmPlannerModal({
                             </span>
                             <span className="text-sm font-bold text-[#A3E4B7]">{strat.finalSuitability} pts</span>
                           </div>
-                          <div className="text-sm font-bold text-white">{strat.labelEn}</div>
+                          <div className="text-sm font-bold text-white">
+                            {lang === "ar" ? (strat.labelAr || strat.labelEn) : strat.labelEn}
+                          </div>
                           <div className="text-xs text-[#9DB0A7]">
-                            {strat.crops.map((c) => c.nameEn).join(" ➔ ")}
+                            {strat.crops.map((c) => (lang === "ar" ? (c.nameAr || c.nameEn) : c.nameEn)).join(" ➔ ")}
                           </div>
                           <div className="pt-2 border-t border-white/10 text-[11px] flex justify-between text-[#8A9B93]">
-                            <span>Water Saved: <strong className="text-white">{strat.waterSavedPercent}%</strong></span>
-                            <span>{strat.grossWaterM3Feddan.toLocaleString()} m³/feddan</span>
+                            <span>{t("strategy.waterSavings")}: <strong className="text-white">{strat.waterSavedPercent}%</strong></span>
+                            <span>{strat.grossWaterM3Feddan.toLocaleString()} {t("strategy.m3Cycle")}</span>
                           </div>
                         </div>
                       ))}
@@ -1211,7 +1217,7 @@ export default function FarmPlannerModal({
                   className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-white/10 bg-[#121A21] hover:bg-[#19242E] text-xs font-semibold text-[#C7D4CD] transition"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
-                  Redraw on Map
+                  {t("modal.redraw")}
                 </button>
                 <button
                   type="button"
@@ -1219,7 +1225,7 @@ export default function FarmPlannerModal({
                   className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-white/10 bg-[#121A21] hover:bg-[#19242E] text-xs font-semibold text-[#C7D4CD] transition"
                 >
                   <Eye className="w-3.5 h-3.5" />
-                  View Map
+                  {t("modal.viewMap")}
                 </button>
               </div>
 
@@ -1237,7 +1243,7 @@ export default function FarmPlannerModal({
                 ) : (
                   <>
                     {t("modal.analyze")}
-                    <ArrowRight className="w-4 h-4" />
+                    <ArrowRight className={`w-4 h-4 ${dir === "rtl" ? "rotate-180" : ""}`} />
                   </>
                 )}
               </button>
@@ -1250,7 +1256,7 @@ export default function FarmPlannerModal({
                   onClick={onBackToInputs}
                   className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-white/10 bg-[#121A21] hover:bg-[#19242E] text-xs font-semibold text-[#C7D4CD] transition"
                 >
-                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <ArrowLeft className={`w-3.5 h-3.5 ${dir === "rtl" ? "rotate-180" : ""}`} />
                   {t("modal.back")}
                 </button>
                 <button
@@ -1259,7 +1265,7 @@ export default function FarmPlannerModal({
                   className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-white/10 bg-[#121A21] hover:bg-[#19242E] text-xs font-semibold text-[#C7D4CD] transition"
                 >
                   <PenTool className="w-3.5 h-3.5" />
-                  {lang === "ar" ? "رسم حقل آخر" : "Mark Another Field"}
+                  {t("modal.markAnother")}
                 </button>
                 <button
                   type="button"
@@ -1267,7 +1273,7 @@ export default function FarmPlannerModal({
                   className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-white/10 bg-[#121A21] hover:bg-[#19242E] text-xs font-semibold text-[#C7D4CD] transition"
                 >
                   <Download className="w-3.5 h-3.5 text-[#A3E4B7]" />
-                  Export GeoJSON
+                  {t("modal.exportGeo")}
                 </button>
               </div>
               <button
@@ -1276,7 +1282,7 @@ export default function FarmPlannerModal({
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white hover:bg-[#A3E4B7] text-[#070B0E] text-xs font-bold shadow-lg transition"
               >
                 <Eye className="w-4 h-4" />
-                View Field on 3D Globe / Map
+                {t("modal.viewOnGlobe")}
               </button>
             </>
           )}
@@ -1285,7 +1291,7 @@ export default function FarmPlannerModal({
 
       {/* ----------------- 5. SCIENTIFIC GLOSSARY MODAL ----------------- */}
       {showGlossary && (
-        <div className="fixed inset-0 z-[520] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
+        <div className="fixed inset-0 z-[520] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in" dir={dir}>
           <div className="w-full max-w-2xl max-h-[85dvh] flex flex-col rounded-3xl bg-[#0D1318] border border-white/15 shadow-2xl text-[#F2F7F4] overflow-hidden">
             {/* Glossary Header */}
             <div className="p-4 border-b border-white/10 flex items-center justify-between bg-[#111920]">
@@ -1293,10 +1299,10 @@ export default function FarmPlannerModal({
                 <BookOpen className="w-5 h-5 text-[#A3E4B7]" />
                 <div>
                   <h3 className="text-base font-bold text-white">
-                    Scientific Glossary for Farmers (قاموس المصطلحات الزراعية)
+                    {t("glossary.title")}
                   </h3>
                   <p className="text-[11px] text-[#8A9B93]">
-                    Translating orbital satellite metrics into practical agricultural insight.
+                    {t("glossary.subtitle")}
                   </p>
                 </div>
               </div>
@@ -1353,7 +1359,7 @@ export default function FarmPlannerModal({
 
                   <div className="p-2.5 rounded-xl bg-black/40 border border-white/5 text-xs text-[#cbd5e1] leading-relaxed">
                     <strong className="text-amber-300 block mb-0.5">
-                      {glossaryLang === "ar" ? "💡 بلغة الفلاح:" : "💡 Farmer Practical Rule:"}
+                      {t("glossary.farmerRule")}
                     </strong>
                     {glossaryLang === "ar" ? term.farmerExplanationAr : term.farmerExplanationEn}
                   </div>
