@@ -70,14 +70,14 @@ interface FarmPlannerModalProps {
 }
 
 const EGYPT_CROPS = [
-  { id: "maize", name: "Summer Maize (Dura Shami)", nameEn: "Summer Maize", nameAr: "ذرة شامية صيفية", seasonEn: "Summer", seasonAr: "صيفية", season: "Seifi" },
-  { id: "sorghum", name: "Grain/Forage Sorghum (Dura Rafia)", nameEn: "Grain/Forage Sorghum", nameAr: "ذرة رفيعة حبوب/علف", seasonEn: "Summer", seasonAr: "صيفية", season: "Seifi" },
-  { id: "soybean", name: "Soybean (Foul Soya)", nameEn: "Soybean", nameAr: "فول صويا", seasonEn: "Summer", seasonAr: "صيفية", season: "Seifi" },
-  { id: "sesame", name: "Sesame (Semsem)", nameEn: "Sesame", nameAr: "سمسم", seasonEn: "Summer", seasonAr: "صيفية", season: "Seifi" },
-  { id: "wheat", name: "Wheat (Qamh)", nameEn: "Wheat", nameAr: "قمح", seasonEn: "Winter", seasonAr: "شتوية", season: "Shitwi" },
-  { id: "berseem", name: "Egyptian Clover (Berseem)", nameEn: "Egyptian Clover (Berseem)", nameAr: "برسيم مصري", seasonEn: "Winter", seasonAr: "شتوية", season: "Shitwi" },
-  { id: "faba_bean", name: "Faba Bean (Foul Baladi)", nameEn: "Faba Bean", nameAr: "فول بلدي", seasonEn: "Winter", seasonAr: "شتوية", season: "Shitwi" },
-  { id: "sugar_beet", name: "Sugar Beet (Bangar El-Sokkar)", nameEn: "Sugar Beet", nameAr: "بنجر السكر", seasonEn: "Winter", seasonAr: "شتوية", season: "Shitwi" },
+  { id: "maize", icon: "🌽", name: "Summer Maize (Dura Shami)", nameEn: "Summer Maize", nameAr: "ذرة شامية صيفية", shortAr: "ذرة صيفية", shortEn: "Maize", seasonEn: "Summer", seasonAr: "صيفية", season: "Seifi" },
+  { id: "sorghum", icon: "🌾", name: "Grain/Forage Sorghum (Dura Rafia)", nameEn: "Grain/Forage Sorghum", nameAr: "ذرة رفيعة حبوب/علف", shortAr: "ذرة رفيعة", shortEn: "Sorghum", seasonEn: "Summer", seasonAr: "صيفية", season: "Seifi" },
+  { id: "soybean", icon: "🌱", name: "Soybean (Foul Soya)", nameEn: "Soybean", nameAr: "فول صويا", shortAr: "فول صويا", shortEn: "Soybean", seasonEn: "Summer", seasonAr: "صيفية", season: "Seifi" },
+  { id: "sesame", icon: "🌿", name: "Sesame (Semsem)", nameEn: "Sesame", nameAr: "سمسم", shortAr: "سمسم", shortEn: "Sesame", seasonEn: "Summer", seasonAr: "صيفية", season: "Seifi" },
+  { id: "wheat", icon: "🌾", name: "Wheat (Qamh)", nameEn: "Wheat", nameAr: "قمح", shortAr: "قمح", shortEn: "Wheat", seasonEn: "Winter", seasonAr: "شتوية", season: "Shitwi" },
+  { id: "berseem", icon: "☘️", name: "Egyptian Clover (Berseem)", nameEn: "Egyptian Clover (Berseem)", nameAr: "برسيم مصري", shortAr: "برسيم", shortEn: "Clover", seasonEn: "Winter", seasonAr: "شتوية", season: "Shitwi" },
+  { id: "faba_bean", icon: "🫘", name: "Faba Bean (Foul Baladi)", nameEn: "Faba Bean", nameAr: "فول بلدي", shortAr: "فول بلدي", shortEn: "Faba Bean", seasonEn: "Winter", seasonAr: "شتوية", season: "Shitwi" },
+  { id: "sugar_beet", icon: "🍠", name: "Sugar Beet (Bangar El-Sokkar)", nameEn: "Sugar Beet", nameAr: "بنجر السكر", shortAr: "بنجر سكر", shortEn: "Sugar Beet", seasonEn: "Winter", seasonAr: "شتوية", season: "Shitwi" },
 ];
 
 const GLOSSARY_DATA = [
@@ -236,11 +236,24 @@ export default function FarmPlannerModal({
   const activeFeddans = inputs.landAreaFeddans ?? computedFeddans;
   // Land location is always derived from map coordinates — never from a dropdown
   const activeLocation = `${field.centroid[0].toFixed(4)}°N, ${field.centroid[1].toFixed(4)}°E`;
-  const activeLastCrop = inputs.lastCrop || "Summer Maize";
+  const activeLastCrop = inputs.lastCrop || "Summer Maize (Dura Shami)";
   const activeStartDate = inputs.plantingStartDate || "2026-11-15";
   const activeIrrigation = inputs.irrigationMethod || "Surface Irrigation";
   const activeWaterAvail = inputs.waterAvailability || "Limited";
   const activeObjective = inputs.planObjective || "Save Water";
+
+  const selectedCropObj = useMemo(() => {
+    return (
+      EGYPT_CROPS.find(
+        (c) =>
+          c.name === activeLastCrop ||
+          c.nameEn === activeLastCrop ||
+          c.id === activeLastCrop ||
+          (activeLastCrop && activeLastCrop.toLowerCase().includes(c.id.toLowerCase())) ||
+          (activeLastCrop && activeLastCrop.toLowerCase().includes(c.nameEn.toLowerCase()))
+      ) || EGYPT_CROPS[0]
+    );
+  }, [activeLastCrop]);
 
   const climateSummary = useMemo(() => {
     const records = nasaData?.records ?? [];
@@ -461,19 +474,21 @@ export default function FarmPlannerModal({
             <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
               {step === "inputs" ? (
                 <div className="relative flex items-center flex-1 sm:flex-initial">
-                  <PenLine className="w-3.5 h-3.5 text-[#A3E4B7] absolute start-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <div className="w-7 h-7 rounded-lg bg-[#A3E4B7]/20 border border-[#A3E4B7]/40 flex items-center justify-center absolute start-1.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <PenLine className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#A3E4B7]" />
+                  </div>
                   <input
                     type="text"
                     value={field.name}
                     onChange={(e) => onUpdateFieldName(e.target.value)}
                     aria-label="Field Name"
-                    placeholder={lang === "ar" ? "اسم الحقل..." : "Field name..."}
-                    className="text-xs sm:text-base font-bold bg-[#121A21] border border-white/10 rounded-xl ps-8 pe-2.5 py-1 text-[#F2F7F4] focus:outline-none focus:ring-2 focus:ring-[#A3E4B7]/40 w-full sm:w-60"
+                    placeholder={lang === "ar" ? "اسم الحقل / القطعة..." : "Field name..."}
+                    className="text-xs sm:text-sm font-bold bg-[#121A21] border border-white/15 focus:border-[#A3E4B7] rounded-xl ps-10 pe-3 py-1.5 text-[#F2F7F4] focus:outline-none focus:ring-2 focus:ring-[#A3E4B7]/40 w-full sm:w-64 transition"
                   />
                 </div>
               ) : (
                 <h2 className="text-xs sm:text-base font-bold text-[#F2F7F4] flex items-center gap-1.5 truncate">
-                  <PenLine className="w-3.5 h-3.5 text-[#A3E4B7]" />
+                  <PenLine className="w-4 h-4 text-[#A3E4B7]" />
                   <span className="truncate">{field.name}</span>
                 </h2>
               )}
@@ -522,103 +537,211 @@ export default function FarmPlannerModal({
               </p>
 
               {/* Land Location: auto-detected from map coordinates */}
-              <div className="rounded-2xl bg-[#111920] border border-white/[0.08] p-4 flex items-center gap-3">
-                <MapPin className="w-5 h-5 text-[#A3E4B7] shrink-0" />
+              <div className="rounded-2xl bg-gradient-to-r from-[#111920] to-[#15222E] border-2 border-[#A3E4B7]/30 p-4 sm:p-5 flex items-center gap-4 shadow-lg shadow-black/20">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-[#A3E4B7]/20 border-2 border-[#A3E4B7]/50 flex items-center justify-center shrink-0 shadow-md shadow-[#A3E4B7]/10">
+                  <MapPin className="w-7 h-7 sm:w-8 sm:h-8 text-[#A3E4B7] animate-pulse" />
+                </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#8A9B93] mb-0.5">
-                    {t("modal.location")}
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs sm:text-sm font-black uppercase tracking-wider text-[#A3E4B7]">
+                      {t("modal.location")}
+                    </span>
+                    <span className="px-2 py-0.5 rounded-full bg-[#A3E4B7]/20 border border-[#A3E4B7]/40 text-[#A3E4B7] text-[10px] font-black uppercase tracking-wider">
+                      GPS 🛰️ {t("modal.live")}
+                    </span>
                   </div>
-                  <div className="text-sm font-bold text-[#F2F7F4] truncate">
+                  <div className="text-base sm:text-lg font-black text-[#F2F7F4] tracking-tight truncate">
                     {field.centroid[0].toFixed(4)}°N, {field.centroid[1].toFixed(4)}°E
                   </div>
-                  <div className="text-[11px] text-[#A3E4B7] mt-0.5">
-                    {t("modal.locationSub")}
+                  <div className="text-xs sm:text-sm text-[#9DB0A7] font-medium mt-0.5 flex items-center gap-1.5 flex-wrap">
+                    <span>📐 {activeFeddans.toFixed(2)} {lang === "ar" ? "فدان" : "Feddans"}</span>
+                    <span>•</span>
+                    <span>{t("modal.locationSub")}</span>
                   </div>
-                </div>
-                <div className="shrink-0 px-2.5 py-1 rounded-full bg-[#A3E4B7]/15 border border-[#A3E4B7]/30 text-[#A3E4B7] text-[10px] font-bold uppercase tracking-wider">
-                  {t("modal.live")}
                 </div>
               </div>
 
               {/* Input 3 & 4: Last Crop & Planting Start Date */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="rounded-2xl bg-[#111920] border border-white/[0.08] p-4 space-y-2.5">
-                  <label className="block text-xs font-bold text-[#F2F7F4] uppercase tracking-wider flex items-center gap-2">
-                    <Wheat className="w-4 h-4 text-[#A3E4B7]" />
-                    <span>{t("input.lastCrop")}</span>
-                  </label>
-                  <div className="relative">
-                    <Sprout className="w-4 h-4 text-[#A3E4B7] absolute start-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                    <select
-                      value={activeLastCrop}
-                      onChange={(e) => onChangeInputs({ ...inputs, lastCrop: e.target.value })}
-                      className="w-full bg-[#0D1318] border border-white/15 rounded-xl ps-9 pe-8 py-2.5 text-sm text-[#F2F7F4] focus:outline-none focus:ring-2 focus:ring-[#A3E4B7]/40"
-                    >
-                      {EGYPT_CROPS.map((c) => (
-                        <option key={c.id} value={c.name} className="bg-[#0D1318] text-white">
-                          {lang === "ar" ? c.nameAr : c.nameEn} ({lang === "ar" ? c.seasonAr : c.seasonEn})
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown className="w-4 h-4 text-[#8A9B93] absolute end-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {/* Input 3: Last Crop with Big Icon + Quick Crop Buttons */}
+                <div className="rounded-2xl bg-[#111920] border-2 border-white/10 p-4 sm:p-5 space-y-3.5 shadow-md flex flex-col justify-between">
+                  <div className="space-y-3.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm sm:text-base font-black text-[#F2F7F4] uppercase tracking-wider flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-xl bg-[#A3E4B7]/20 border border-[#A3E4B7]/40 flex items-center justify-center">
+                          <Wheat className="w-5 h-5 text-[#A3E4B7]" />
+                        </div>
+                        <span>{t("input.lastCrop")}</span>
+                      </label>
+                      <span className="text-xs font-bold text-[#A3E4B7] px-2.5 py-1 rounded-full bg-[#A3E4B7]/10 border border-[#A3E4B7]/20">
+                        {selectedCropObj.icon} {lang === "ar" ? selectedCropObj.seasonAr : selectedCropObj.seasonEn}
+                      </span>
+                    </div>
+
+                    {/* Select Input with Big Visible Emoji Icon */}
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-[#A3E4B7]/25 to-[#A3E4B7]/10 border-2 border-[#A3E4B7]/60 flex items-center justify-center text-3xl sm:text-4xl shadow-md shadow-[#A3E4B7]/15 shrink-0 transition-transform"
+                        title={lang === "ar" ? selectedCropObj.nameAr : selectedCropObj.nameEn}
+                      >
+                        <span className="drop-shadow-md select-none">{selectedCropObj.icon}</span>
+                      </div>
+
+                      <div className="relative flex-1 min-w-0">
+                        <select
+                          value={activeLastCrop}
+                          onChange={(e) => onChangeInputs({ ...inputs, lastCrop: e.target.value })}
+                          className="w-full h-14 sm:h-16 bg-[#0D1318] border-2 border-white/20 hover:border-[#A3E4B7]/60 focus:border-[#A3E4B7] rounded-2xl ps-4 pe-10 text-sm sm:text-base font-bold text-[#F2F7F4] focus:outline-none focus:ring-4 focus:ring-[#A3E4B7]/20 transition cursor-pointer appearance-none truncate"
+                        >
+                          {EGYPT_CROPS.map((c) => (
+                            <option key={c.id} value={c.name} className="bg-[#0D1318] text-white text-base py-2">
+                              {c.icon} {lang === "ar" ? c.nameAr : c.nameEn} ({lang === "ar" ? c.seasonAr : c.seasonEn})
+                            </option>
+                          ))}
+                        </select>
+                        <ChevronDown className="w-5 h-5 text-[#A3E4B7] absolute end-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      </div>
+                    </div>
+
+                    {/* Quick-Tap Visual Crop Cards for Farmers with low literacy / small text read */}
+                    <div className="space-y-1.5 pt-1">
+                      <div className="text-[11px] font-bold text-[#8A9B93] uppercase tracking-wider">
+                        {lang === "ar" ? "أو اضغط مباشرة على رمز المحصول:" : "Or tap crop icon directly:"}
+                      </div>
+                      <div className="grid grid-cols-4 gap-2">
+                        {EGYPT_CROPS.map((c) => {
+                          const isSelected = selectedCropObj.id === c.id;
+                          return (
+                            <button
+                              key={c.id}
+                              type="button"
+                              onClick={() => onChangeInputs({ ...inputs, lastCrop: c.name })}
+                              className={`p-2 rounded-xl border-2 transition flex flex-col items-center justify-center text-center gap-1 ${
+                                isSelected
+                                  ? "bg-[#A3E4B7]/25 border-[#A3E4B7] text-white shadow-md shadow-[#A3E4B7]/20 scale-[1.03]"
+                                  : "bg-[#0D1318] border-white/10 hover:border-white/25 text-[#9DB0A7]"
+                              }`}
+                            >
+                              <span className="text-2xl sm:text-3xl select-none">{c.icon}</span>
+                              <span className="text-[10px] sm:text-xs font-bold truncate max-w-full leading-tight">
+                                {lang === "ar" ? c.shortAr : c.shortEn}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-[11px] text-[#8A9B93]">
+
+                  <p className="text-xs text-[#8A9B93] leading-relaxed pt-1">
                     {t("input.lastCropTip")}
                   </p>
                 </div>
 
-                <div className="rounded-2xl bg-[#111920] border border-white/[0.08] p-4 space-y-2.5">
-                  <label className="block text-xs font-bold text-[#F2F7F4] uppercase tracking-wider flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-[#A3E4B7]" />
-                    <span>{t("input.plantingDate")}</span>
-                  </label>
-                  <div className="relative">
-                    <CalendarDays className="w-4 h-4 text-[#A3E4B7] absolute start-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                    <input
-                      type="date"
-                      value={activeStartDate}
-                      onChange={(e) => onChangeInputs({ ...inputs, plantingStartDate: e.target.value })}
-                      className="w-full bg-[#0D1318] border border-white/15 rounded-xl ps-9 pe-3 py-2.5 text-sm text-[#F2F7F4] focus:outline-none focus:ring-2 focus:ring-[#A3E4B7]/40"
-                    />
+                {/* Input 4: Target Planting Start Date */}
+                <div className="rounded-2xl bg-[#111920] border-2 border-white/10 p-4 sm:p-5 space-y-3.5 shadow-md flex flex-col justify-between">
+                  <div className="space-y-3.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm sm:text-base font-black text-[#F2F7F4] uppercase tracking-wider flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-xl bg-amber-400/20 border border-amber-400/40 flex items-center justify-center">
+                          <CalendarDays className="w-5 h-5 text-amber-300" />
+                        </div>
+                        <span>{t("input.plantingDate")}</span>
+                      </label>
+                      <span className="text-xs font-bold text-amber-300 px-2.5 py-1 rounded-full bg-amber-400/10 border border-amber-400/20">
+                        📅 {lang === "ar" ? "العروة الشتوية" : "Winter Window"}
+                      </span>
+                    </div>
+
+                    {/* Date Input with Big Visible Icon */}
+                    <div className="flex items-center gap-3">
+                      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-amber-400/25 to-amber-500/10 border-2 border-amber-400/60 flex items-center justify-center text-3xl sm:text-4xl shadow-md shadow-amber-400/15 shrink-0">
+                        <CalendarDays className="w-7 h-7 sm:w-8 sm:h-8 text-amber-300" />
+                      </div>
+
+                      <div className="relative flex-1 min-w-0">
+                        <input
+                          type="date"
+                          value={activeStartDate}
+                          onChange={(e) => onChangeInputs({ ...inputs, plantingStartDate: e.target.value })}
+                          className="w-full h-14 sm:h-16 bg-[#0D1318] border-2 border-white/20 hover:border-amber-400/60 focus:border-amber-400 rounded-2xl px-4 text-base sm:text-lg font-black text-[#F2F7F4] focus:outline-none focus:ring-4 focus:ring-amber-400/20 transition cursor-pointer"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="p-3.5 rounded-xl bg-amber-400/10 border border-amber-400/25 text-amber-200 text-xs sm:text-sm font-medium flex items-center gap-2.5">
+                      <Sparkles className="w-5 h-5 text-amber-400 shrink-0" />
+                      <span>{t("input.targetWindow")}</span>
+                    </div>
                   </div>
-                  <p className="text-[11px] text-[#A3E4B7]">
-                    {t("input.targetWindow")}
-                  </p>
+
+                  <div className="p-3 rounded-xl bg-[#0D1318] border border-white/5 text-[11px] text-[#8A9B93]">
+                    {lang === "ar"
+                      ? "نظام المناخ يربط تاريخ الزراعة ببيانات الأرصاد الفضائية لتقدير درجات الحرارة ونوبات الصقيع."
+                      : "Satellite engine aligns planting date with orbital meteorological records to detect frost & heat spikes."}
+                  </div>
                 </div>
               </div>
 
               {/* Input 5: Irrigation Method */}
-              <div className="rounded-2xl bg-[#111920] border border-white/[0.08] p-4 space-y-2.5">
-                <label className="block text-xs font-bold text-[#F2F7F4] uppercase tracking-wider flex items-center gap-2">
-                  <Waves className="w-4 h-4 text-cyan-400" />
-                  <span>{t("input.irrigation")}</span>
-                </label>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              <div className="rounded-2xl bg-[#111920] border-2 border-white/10 p-4 sm:p-5 space-y-3.5 shadow-md">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm sm:text-base font-black text-[#F2F7F4] uppercase tracking-wider flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-cyan-400/20 border border-cyan-400/40 flex items-center justify-center">
+                      <Waves className="w-5 h-5 text-cyan-400" />
+                    </div>
+                    <span>{t("input.irrigation")}</span>
+                  </label>
+                  <span className="text-xs text-[#8A9B93] font-bold">
+                    {lang === "ar" ? "اختر طريقة الري بالحقل" : "Select irrigation system"}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   {(["Surface Irrigation", "Drip", "Sprinkler"] as const).map((method) => {
                     const active = activeIrrigation === method;
                     const efficiency = method === "Surface Irrigation" ? "55%" : method === "Drip" ? "88%" : "75%";
                     const label = method === "Surface Irrigation" ? t("input.surface") : method === "Drip" ? t("input.drip") : t("input.sprinkler");
+                    const emoji = method === "Surface Irrigation" ? "🌊" : method === "Drip" ? "💧" : "🌧️";
                     const IconComponent = method === "Surface Irrigation" ? Waves : method === "Drip" ? Droplets : CloudRain;
                     const iconColor = method === "Surface Irrigation" ? "text-blue-400" : method === "Drip" ? "text-emerald-400" : "text-sky-400";
+                    const borderActive = method === "Surface Irrigation" ? "border-blue-400" : method === "Drip" ? "border-emerald-400" : "border-sky-400";
+                    const bgActive = method === "Surface Irrigation" ? "bg-blue-500/20" : method === "Drip" ? "bg-emerald-500/20" : "bg-sky-500/20";
+
                     return (
                       <button
                         key={method}
                         type="button"
                         onClick={() => onChangeInputs({ ...inputs, irrigationMethod: method })}
-                        className={`p-3.5 rounded-xl border text-left transition flex flex-col justify-between ${
+                        className={`p-4 rounded-2xl border-2 text-start transition flex flex-col justify-between gap-3 min-h-[120px] ${
                           active
-                            ? "bg-[#A3E4B7]/15 border-[#A3E4B7] text-white shadow-md shadow-[#A3E4B7]/10"
-                            : "bg-[#0D1318] border-white/10 text-[#9DB0A7] hover:border-white/20 hover:bg-[#121A21]"
+                            ? `${bgActive} ${borderActive} text-white shadow-lg shadow-black/30 scale-[1.02]`
+                            : "bg-[#0D1318] border-white/10 text-[#9DB0A7] hover:border-white/25 hover:bg-[#121A21]"
                         }`}
                       >
-                        <div className="flex items-center justify-between w-full mb-2">
-                          <div className={`p-2 rounded-lg ${active ? "bg-[#A3E4B7]/20" : "bg-white/5"} ${iconColor}`}>
-                            <IconComponent className="w-4 h-4" />
+                        <div className="flex items-center justify-between w-full">
+                          <div className="flex items-center gap-2.5">
+                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shadow-md ${active ? "bg-white/15" : "bg-white/5"}`}>
+                              <span className="select-none">{emoji}</span>
+                            </div>
+                            <div className={`p-2 rounded-xl ${active ? "bg-white/15" : "bg-white/5"} ${iconColor}`}>
+                              <IconComponent className="w-5 h-5" />
+                            </div>
                           </div>
-                          {active && <CheckCircle2 className="w-4 h-4 text-[#A3E4B7]" />}
+                          {active && (
+                            <div className="w-7 h-7 rounded-full bg-[#A3E4B7] text-[#0B1015] flex items-center justify-center font-black shadow-md">
+                              <CheckCircle2 className="w-5 h-5" />
+                            </div>
+                          )}
                         </div>
-                        <div className="text-xs font-bold text-white">{label}</div>
-                        <div className="text-[10px] text-[#8A9B93] mt-1">{t("input.efficiency")}: <span className="font-semibold text-[#A3E4B7]">{efficiency}</span></div>
+
+                        <div>
+                          <div className="text-sm sm:text-base font-black text-white">{label}</div>
+                          <div className="text-xs text-[#8A9B93] mt-1 flex items-center gap-1.5">
+                            <span>{t("input.efficiency")}:</span>
+                            <span className="font-black text-[#A3E4B7] text-sm">{efficiency}</span>
+                          </div>
+                        </div>
                       </button>
                     );
                   })}
@@ -626,37 +749,61 @@ export default function FarmPlannerModal({
               </div>
 
               {/* Input 6: Water Availability */}
-              <div className="rounded-2xl bg-[#111920] border border-white/[0.08] p-4 space-y-2.5">
-                <label className="block text-xs font-bold text-[#F2F7F4] uppercase tracking-wider flex items-center gap-2">
-                  <Droplets className="w-4 h-4 text-sky-400" />
-                  <span>{t("input.waterAvail")}</span>
-                </label>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              <div className="rounded-2xl bg-[#111920] border-2 border-white/10 p-4 sm:p-5 space-y-3.5 shadow-md">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm sm:text-base font-black text-[#F2F7F4] uppercase tracking-wider flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-sky-400/20 border border-sky-400/40 flex items-center justify-center">
+                      <Droplets className="w-5 h-5 text-sky-400" />
+                    </div>
+                    <span>{t("input.waterAvail")}</span>
+                  </label>
+                  <span className="text-xs text-[#8A9B93] font-bold">
+                    {lang === "ar" ? "موقع الحقل على الترعة ونوبات الري" : "Canal location & water turns"}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   {(["Limited", "Moderate", "Abundant"] as const).map((avail) => {
                     const active = activeWaterAvail === avail;
                     const label = avail === "Limited" ? t("input.limited") : avail === "Moderate" ? t("input.moderate") : t("input.abundant");
                     const note = avail === "Limited" ? t("input.limitedTip") : avail === "Moderate" ? t("input.moderateTip") : t("input.abundantTip");
+                    const emoji = avail === "Limited" ? "⚠️" : avail === "Moderate" ? "💧" : "🌊";
                     const IconComponent = avail === "Limited" ? AlertTriangle : avail === "Moderate" ? Droplets : Waves;
                     const iconColor = avail === "Limited" ? "text-amber-400" : avail === "Moderate" ? "text-sky-400" : "text-emerald-400";
+                    const borderActive = avail === "Limited" ? "border-amber-400" : avail === "Moderate" ? "border-sky-400" : "border-emerald-400";
+                    const bgActive = avail === "Limited" ? "bg-amber-500/20" : avail === "Moderate" ? "bg-sky-500/20" : "bg-emerald-500/20";
+
                     return (
                       <button
                         key={avail}
                         type="button"
                         onClick={() => onChangeInputs({ ...inputs, waterAvailability: avail })}
-                        className={`p-3.5 rounded-xl border text-left transition flex flex-col justify-between ${
+                        className={`p-4 rounded-2xl border-2 text-start transition flex flex-col justify-between gap-3 min-h-[120px] ${
                           active
-                            ? "bg-sky-500/15 border-sky-400 text-white shadow-md shadow-sky-500/10"
-                            : "bg-[#0D1318] border-white/10 text-[#9DB0A7] hover:border-white/20 hover:bg-[#121A21]"
+                            ? `${bgActive} ${borderActive} text-white shadow-lg shadow-black/30 scale-[1.02]`
+                            : "bg-[#0D1318] border-white/10 text-[#9DB0A7] hover:border-white/25 hover:bg-[#121A21]"
                         }`}
                       >
-                        <div className="flex items-center justify-between w-full mb-2">
-                          <div className={`p-2 rounded-lg ${active ? "bg-sky-500/20" : "bg-white/5"} ${iconColor}`}>
-                            <IconComponent className="w-4 h-4" />
+                        <div className="flex items-center justify-between w-full">
+                          <div className="flex items-center gap-2.5">
+                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shadow-md ${active ? "bg-white/15" : "bg-white/5"}`}>
+                              <span className="select-none">{emoji}</span>
+                            </div>
+                            <div className={`p-2 rounded-xl ${active ? "bg-white/15" : "bg-white/5"} ${iconColor}`}>
+                              <IconComponent className="w-5 h-5" />
+                            </div>
                           </div>
-                          {active && <CheckCircle2 className="w-4 h-4 text-sky-400" />}
+                          {active && (
+                            <div className="w-7 h-7 rounded-full bg-white text-[#0B1015] flex items-center justify-center font-black shadow-md">
+                              <CheckCircle2 className="w-5 h-5" />
+                            </div>
+                          )}
                         </div>
-                        <div className="text-xs font-bold text-white">{label}</div>
-                        <div className="text-[10px] text-[#8A9B93] mt-1 leading-snug">{note}</div>
+
+                        <div>
+                          <div className="text-sm sm:text-base font-black text-white">{label}</div>
+                          <div className="text-xs text-[#8A9B93] mt-1 leading-snug">{note}</div>
+                        </div>
                       </button>
                     );
                   })}
@@ -664,56 +811,76 @@ export default function FarmPlannerModal({
               </div>
 
               {/* Input 7: Plan Objective */}
-              <div className="rounded-2xl bg-[#111920] border border-white/[0.08] p-4 space-y-2.5">
-                <label className="block text-xs font-bold text-[#F2F7F4] uppercase tracking-wider flex items-center gap-2">
-                  <Target className="w-4 h-4 text-[#A3E4B7]" />
-                  <span>{t("input.objective")}</span>
-                </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div className="rounded-2xl bg-[#111920] border-2 border-white/10 p-4 sm:p-5 space-y-3.5 shadow-md">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm sm:text-base font-black text-[#F2F7F4] uppercase tracking-wider flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-[#A3E4B7]/20 border border-[#A3E4B7]/40 flex items-center justify-center">
+                      <Target className="w-5 h-5 text-[#A3E4B7]" />
+                    </div>
+                    <span>{t("input.objective")}</span>
+                  </label>
+                  <span className="text-xs text-[#8A9B93] font-bold">
+                    {lang === "ar" ? "أولوية التوصية الذكية" : "Target rotation goal"}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <button
                     type="button"
                     onClick={() => onChangeInputs({ ...inputs, planObjective: "Save Water", priority: "water-saving" })}
-                    className={`p-4 rounded-xl border text-left transition ${
+                    className={`p-4 sm:p-5 rounded-2xl border-2 text-start transition flex items-start gap-4 ${
                       activeObjective === "Save Water"
-                        ? "bg-[#A3E4B7]/15 border-[#A3E4B7] text-white shadow-md shadow-[#A3E4B7]/10"
-                        : "bg-[#0D1318] border-white/10 text-[#9DB0A7] hover:border-white/20 hover:bg-[#121A21]"
+                        ? "bg-sky-500/20 border-sky-400 text-white shadow-lg shadow-sky-500/15 scale-[1.01]"
+                        : "bg-[#0D1318] border-white/10 text-[#9DB0A7] hover:border-white/25 hover:bg-[#121A21]"
                     }`}
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className={`p-2.5 rounded-xl ${activeObjective === "Save Water" ? "bg-sky-500/25 text-sky-300" : "bg-white/5 text-sky-400"}`}>
-                        <Droplets className="w-5 h-5" />
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-sky-500/25 border-2 border-sky-400/50 flex items-center justify-center text-3xl sm:text-4xl shadow-md shrink-0">
+                      <span className="select-none">💧</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="text-base sm:text-lg font-black text-white">
+                          {t("input.saveWater")}
+                        </div>
+                        {activeObjective === "Save Water" && (
+                          <div className="w-6 h-6 rounded-full bg-sky-400 text-[#0B1015] flex items-center justify-center font-black">
+                            <CheckCircle2 className="w-4 h-4" />
+                          </div>
+                        )}
                       </div>
-                      {activeObjective === "Save Water" && <CheckCircle2 className="w-4 h-4 text-[#A3E4B7]" />}
+                      <p className="text-xs sm:text-sm text-[#8A9B93] leading-relaxed">
+                        {t("input.saveWaterDesc")}
+                      </p>
                     </div>
-                    <div className="font-bold text-sm text-white mb-1">
-                      {t("input.saveWater")}
-                    </div>
-                    <p className="text-xs text-[#8A9B93] leading-snug">
-                      {t("input.saveWaterDesc")}
-                    </p>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => onChangeInputs({ ...inputs, planObjective: "Improve Soil Health", priority: "sustainability" })}
-                    className={`p-4 rounded-xl border text-left transition ${
+                    className={`p-4 sm:p-5 rounded-2xl border-2 text-start transition flex items-start gap-4 ${
                       activeObjective === "Improve Soil Health"
-                        ? "bg-[#A3E4B7]/15 border-[#A3E4B7] text-white shadow-md shadow-[#A3E4B7]/10"
-                        : "bg-[#0D1318] border-white/10 text-[#9DB0A7] hover:border-white/20 hover:bg-[#121A21]"
+                        ? "bg-emerald-500/20 border-[#A3E4B7] text-white shadow-lg shadow-[#A3E4B7]/15 scale-[1.01]"
+                        : "bg-[#0D1318] border-white/10 text-[#9DB0A7] hover:border-white/25 hover:bg-[#121A21]"
                     }`}
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className={`p-2.5 rounded-xl ${activeObjective === "Improve Soil Health" ? "bg-[#A3E4B7]/25 text-[#A3E4B7]" : "bg-white/5 text-[#A3E4B7]"}`}>
-                        <Leaf className="w-5 h-5" />
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-emerald-500/25 border-2 border-[#A3E4B7]/50 flex items-center justify-center text-3xl sm:text-4xl shadow-md shrink-0">
+                      <span className="select-none">🌿</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="text-base sm:text-lg font-black text-white">
+                          {t("input.improveSoil")}
+                        </div>
+                        {activeObjective === "Improve Soil Health" && (
+                          <div className="w-6 h-6 rounded-full bg-[#A3E4B7] text-[#0B1015] flex items-center justify-center font-black">
+                            <CheckCircle2 className="w-4 h-4" />
+                          </div>
+                        )}
                       </div>
-                      {activeObjective === "Improve Soil Health" && <CheckCircle2 className="w-4 h-4 text-[#A3E4B7]" />}
+                      <p className="text-xs sm:text-sm text-[#8A9B93] leading-relaxed">
+                        {t("input.improveSoilDesc")}
+                      </p>
                     </div>
-                    <div className="font-bold text-sm text-white mb-1">
-                      {t("input.improveSoil")}
-                    </div>
-                    <p className="text-xs text-[#8A9B93] leading-snug">
-                      {t("input.improveSoilDesc")}
-                    </p>
                   </button>
                 </div>
               </div>
@@ -1300,17 +1467,18 @@ export default function FarmPlannerModal({
                 type="button"
                 disabled={isEvaluating}
                 onClick={handleCalculateAndProceed}
-                className="order-1 sm:order-2 inline-flex items-center justify-center gap-2 px-6 py-3 sm:py-2.5 rounded-full bg-white hover:bg-[#A3E4B7] text-[#070B0E] text-xs sm:text-sm font-bold shadow-lg transition disabled:opacity-50"
+                className="order-1 sm:order-2 inline-flex items-center justify-center gap-2.5 px-7 py-3 sm:py-3 rounded-full bg-[#A3E4B7] hover:bg-[#8ee0a6] text-[#070B0E] text-sm sm:text-base font-black shadow-lg shadow-[#A3E4B7]/25 transition disabled:opacity-50 active:scale-98"
               >
                 {isEvaluating ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin text-[#070B0E]" />
-                    {t("modal.analyzing")}
+                    <Loader2 className="w-5 h-5 animate-spin text-[#070B0E]" />
+                    <span>{t("modal.analyzing")}</span>
                   </>
                 ) : (
                   <>
-                    {t("modal.analyze")}
-                    <ArrowRight className={`w-4 h-4 ${dir === "rtl" ? "rotate-180" : ""}`} />
+                    <Sparkles className="w-5 h-5 text-[#070B0E]" />
+                    <span>{t("modal.analyze")}</span>
+                    <ArrowRight className={`w-5 h-5 ${dir === "rtl" ? "rotate-180" : ""}`} />
                   </>
                 )}
               </button>

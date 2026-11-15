@@ -32,6 +32,17 @@ interface FieldSidebarProps {
   isLoadingNasa: boolean;
 }
 
+const CROP_ICONS: Record<string, string> = {
+  Wheat: "🌾",
+  Corn: "🌽",
+  Rice: "🍚",
+  Soybeans: "🌱",
+  Cotton: "🪴",
+  Vegetables: "🥬",
+  Orchard: "🍎",
+  Pasture: "🌿",
+};
+
 function FieldSidebar({
   fields,
   selectedField,
@@ -66,8 +77,8 @@ function FieldSidebar({
         <div className="p-4 border-b border-white/10 space-y-3">
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
-              <label className="block text-[10px] font-semibold uppercase tracking-widest text-[#8A9B93] mb-0.5 flex items-center gap-1">
-                <PenLine className="w-3 h-3 text-[#A3E4B7]" />
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-[#8A9B93] mb-1 flex items-center gap-1.5">
+                <PenLine className="w-4 h-4 text-[#A3E4B7]" />
                 Selected Land Parcel
               </label>
               <input
@@ -76,14 +87,14 @@ function FieldSidebar({
                 onChange={(e) =>
                   onUpdateField(selectedField.id, { name: e.target.value })
                 }
-                className="w-full text-base font-bold text-[#F2F7F4] bg-transparent border-b border-transparent hover:border-white/20 focus:border-[#A3E4B7] focus:outline-none py-0.5 transition"
+                className="w-full text-base font-bold text-[#F2F7F4] bg-transparent border-b border-transparent hover:border-white/20 focus:border-[#A3E4B7] focus:outline-none py-1 transition"
                 aria-label="Field name"
               />
             </div>
 
             <div className="shrink-0">
-              <label className="block text-[10px] font-semibold uppercase tracking-widest text-[#8A9B93] mb-0.5 flex items-center gap-1">
-                <Sprout className="w-3 h-3 text-[#A3E4B7]" />
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-[#8A9B93] mb-1 flex items-center gap-1.5">
+                <Sprout className="w-4 h-4 text-[#A3E4B7]" />
                 Crop
               </label>
               <select
@@ -93,12 +104,12 @@ function FieldSidebar({
                     crop: e.target.value as CropType,
                   })
                 }
-                className="text-xs font-semibold text-[#A3E4B7] bg-[#111920] border border-[#A3E4B7]/30 rounded-xl px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#A3E4B7]/40"
+                className="text-xs sm:text-sm font-bold text-[#A3E4B7] bg-[#111920] border-2 border-[#A3E4B7]/40 rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#A3E4B7]/40 cursor-pointer"
                 aria-label="Crop type"
               >
                 {CROP_TYPES.map((crop) => (
-                  <option key={crop} value={crop} className="bg-[#0D1318] text-[#F2F7F4]">
-                    {crop}
+                  <option key={crop} value={crop} className="bg-[#0D1318] text-[#F2F7F4] py-1">
+                    {CROP_ICONS[crop] || "🌱"} {crop}
                   </option>
                 ))}
               </select>
