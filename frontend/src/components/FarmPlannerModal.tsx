@@ -381,7 +381,12 @@ export default function FarmPlannerModal({
     >
       <div dir={dir} className="w-full max-w-4xl h-full sm:h-auto sm:max-h-[92dvh] flex flex-col rounded-none sm:rounded-3xl bg-[#0B1015]/95 border-0 sm:border border-white/10 shadow-2xl text-[#F2F7F4] overflow-hidden">
         {/* Top Header: Field Info, Area, NASA Weather & Mobile Controls */}
-        <div className="shrink-0 px-3.5 sm:px-5 py-2.5 sm:py-3.5 border-b border-white/[0.08] bg-[#0D1318]">
+        <div
+          style={{
+            paddingTop: "max(env(safe-area-inset-top, 0px), var(--app-top-padding, 10px))",
+          }}
+          className="shrink-0 px-3.5 sm:px-5 pb-2.5 sm:pb-3.5 border-b border-white/[0.08] bg-[#0D1318]"
+        >
           {/* Row 1: Brand/Stage Title & Header Actions (Lang, Glossary, Close) */}
           <div className="flex items-center justify-between gap-2 mb-2">
             <div className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-[0.16em] text-[#A3E4B7] truncate">

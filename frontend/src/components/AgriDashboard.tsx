@@ -236,6 +236,18 @@ export default function AgriDashboard() {
     viewModeRef.current = viewMode;
   }, [viewMode]);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const isCap = Boolean(
+        (window as any).Capacitor?.isNativePlatform?.() ||
+        (window as any).Capacitor !== undefined
+      );
+      if (isCap) {
+        document.body.classList.add("capacitor-app");
+      }
+    }
+  }, []);
+
   const enterMap = useCallback((center: LatLngPoint, zoom: number) => {
     const pending = pendingFlyRef.current;
     pendingFlyRef.current = null;
@@ -529,10 +541,13 @@ export default function AgriDashboard() {
     <div className="relative h-dvh w-screen flex flex-col bg-[#070B0E] text-[#F2F7F4] overflow-hidden">
       {/* Top Navigation Bar (Guided 3-Step Flow Header — Responsive Mobile + Desktop) */}
       <header
-        className={`shrink-0 bg-[#0B1015]/95 backdrop-blur-xl border-white/10 px-2.5 sm:px-4 flex items-center justify-between gap-1.5 sm:gap-3 z-20 transition-all duration-500 ease-out ${
+        style={{
+          paddingTop: "max(env(safe-area-inset-top, 0px), var(--app-top-padding, 0px))",
+        }}
+        className={`shrink-0 bg-[#0B1015]/95 backdrop-blur-xl border-white/10 px-2.5 sm:px-4 py-1.5 sm:py-2 flex items-center justify-between gap-1.5 sm:gap-3 z-20 transition-all duration-500 ease-out ${
           isWelcomeOpen
             ? "-translate-y-full opacity-0 pointer-events-none h-0 border-0 overflow-hidden"
-            : "translate-y-0 opacity-100 h-13 sm:h-14 border-b"
+            : "translate-y-0 opacity-100 min-h-[52px] sm:min-h-[56px] border-b"
         }`}
       >
         {/* Left: Brand + Home + Tour + Language */}

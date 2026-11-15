@@ -91,3 +91,12 @@ html, body {
 input, select, textarea, button {
   touch-action: manipulation;
 }
+
+:root {
+  --app-top-padding: 0px;
+}
+
+body.capacitor-app,
+body.native-app {
+  --app-top-padding: 28px;
+}
