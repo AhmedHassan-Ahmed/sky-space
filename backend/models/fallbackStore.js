@@ -2,7 +2,8 @@ import fs from "fs";
 import path from "path";
 import crypto from "crypto";
 
-const DATA_DIR = path.resolve("backend/data");
+const isVercel = process.env.VERCEL === "1" || !!process.env.VERCEL_ENV;
+const DATA_DIR = isVercel ? path.join("/tmp", "backend_data") : path.resolve("backend/data");
 const DB_FILE = path.join(DATA_DIR, "db.json");
 
 function ensureStore() {

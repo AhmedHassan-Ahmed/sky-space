@@ -7,27 +7,36 @@ import { fileURLToPath } from "url";
 
 import authRoutes from "./routes/auth.js";
 import farmRoutes from "./routes/farm.js";
+import connectDB from "./config/db.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, ".env") });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-let MONGODB_URI = (process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/fieldshift").trim();
-if (MONGODB_URI.startsWith("MONGODB_URI=")) {
-  MONGODB_URI = MONGODB_URI.replace(/^MONGODB_URI=/, "").trim();
-}
-MONGODB_URI = MONGODB_URI.replace(/^["']/, "").replace(/["']$/, "");
 
 // Middlewares
 app.use(cors());
 app.use(express.json());
 
+// Serverless DB connection middleware: ensures DB is connected before handling API requests
+app.use(async (req, res, next) => {
+  if (req.path.startsWith("/api") && req.path !== "/api/health") {
+    try {
+      await connectDB();
+    } catch (err) {
+      // If DB connection fails, routes can still use fallbackStore without hanging
+      console.warn("DB connection attempt failed during request:", err.message);
+    }
+  }
+  next();
+});
+
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/farm", farmRoutes);
 
-// Health check (before static, so it's not shadowed)
+// Health check
 app.get("/api/health", (req, res) => {
   res.json({
     status: "ok",
@@ -40,18 +49,14 @@ app.get("/api/health", (req, res) => {
 const frontendDir = path.join(__dirname, "..");
 app.use(express.static(frontendDir));
 
-// Database connection
-mongoose
-  .connect(MONGODB_URI, { serverSelectionTimeoutMS: 2000 })
-  .then(() => {
-    console.log("MongoDB connected successfully:", MONGODB_URI);
-  })
-  .catch((err) => {
-    console.warn("⚠️ MongoDB connection error (Make sure MongoDB is running or configure MONGODB_URI in .env):", err.message);
-    console.log("ℹ️ Seamless local JSON storage fallback active in backend/data/db.json");
+// Initial database connection for persistent / local environments
+if (process.env.NODE_ENV !== "test" && process.env.VERCEL !== "1") {
+  connectDB().catch((err) => {
+    console.warn("⚠️ Initial MongoDB connection error (will retry on incoming requests):", err.message);
   });
+}
 
-// Start Server
+// Start Server in non-serverless mode
 if (process.env.NODE_ENV !== "test" && process.env.VERCEL !== "1") {
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`Sky Space Backend API running on http://localhost:${PORT}`);
