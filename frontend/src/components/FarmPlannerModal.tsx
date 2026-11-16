@@ -703,8 +703,6 @@ export default function FarmPlannerModal({
                     const efficiency = method === "Surface Irrigation" ? "55%" : method === "Drip" ? "88%" : "75%";
                     const label = method === "Surface Irrigation" ? t("input.surface") : method === "Drip" ? t("input.drip") : t("input.sprinkler");
                     const emoji = method === "Surface Irrigation" ? "🌊" : method === "Drip" ? "💧" : "🌧️";
-                    const IconComponent = method === "Surface Irrigation" ? Waves : method === "Drip" ? Droplets : CloudRain;
-                    const iconColor = method === "Surface Irrigation" ? "text-blue-400" : method === "Drip" ? "text-emerald-400" : "text-sky-400";
                     const borderActive = method === "Surface Irrigation" ? "border-blue-400" : method === "Drip" ? "border-emerald-400" : "border-sky-400";
                     const bgActive = method === "Surface Irrigation" ? "bg-blue-500/20" : method === "Drip" ? "bg-emerald-500/20" : "bg-sky-500/20";
 
@@ -720,13 +718,8 @@ export default function FarmPlannerModal({
                         }`}
                       >
                         <div className="flex items-center justify-between w-full">
-                          <div className="flex items-center gap-2.5">
-                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shadow-md ${active ? "bg-white/15" : "bg-white/5"}`}>
-                              <span className="select-none">{emoji}</span>
-                            </div>
-                            <div className={`p-2 rounded-xl ${active ? "bg-white/15" : "bg-white/5"} ${iconColor}`}>
-                              <IconComponent className="w-5 h-5" />
-                            </div>
+                          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shadow-md ${active ? "bg-white/20" : "bg-white/5"}`}>
+                            <span className="select-none">{emoji}</span>
                           </div>
                           {active && (
                             <div className="w-7 h-7 rounded-full bg-[#A3E4B7] text-[#0B1015] flex items-center justify-center font-black shadow-md">
@@ -768,8 +761,6 @@ export default function FarmPlannerModal({
                     const label = avail === "Limited" ? t("input.limited") : avail === "Moderate" ? t("input.moderate") : t("input.abundant");
                     const note = avail === "Limited" ? t("input.limitedTip") : avail === "Moderate" ? t("input.moderateTip") : t("input.abundantTip");
                     const emoji = avail === "Limited" ? "⚠️" : avail === "Moderate" ? "💧" : "🌊";
-                    const IconComponent = avail === "Limited" ? AlertTriangle : avail === "Moderate" ? Droplets : Waves;
-                    const iconColor = avail === "Limited" ? "text-amber-400" : avail === "Moderate" ? "text-sky-400" : "text-emerald-400";
                     const borderActive = avail === "Limited" ? "border-amber-400" : avail === "Moderate" ? "border-sky-400" : "border-emerald-400";
                     const bgActive = avail === "Limited" ? "bg-amber-500/20" : avail === "Moderate" ? "bg-sky-500/20" : "bg-emerald-500/20";
 
@@ -785,13 +776,8 @@ export default function FarmPlannerModal({
                         }`}
                       >
                         <div className="flex items-center justify-between w-full">
-                          <div className="flex items-center gap-2.5">
-                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shadow-md ${active ? "bg-white/15" : "bg-white/5"}`}>
-                              <span className="select-none">{emoji}</span>
-                            </div>
-                            <div className={`p-2 rounded-xl ${active ? "bg-white/15" : "bg-white/5"} ${iconColor}`}>
-                              <IconComponent className="w-5 h-5" />
-                            </div>
+                          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shadow-md ${active ? "bg-white/20" : "bg-white/5"}`}>
+                            <span className="select-none">{emoji}</span>
                           </div>
                           {active && (
                             <div className="w-7 h-7 rounded-full bg-white text-[#0B1015] flex items-center justify-center font-black shadow-md">
